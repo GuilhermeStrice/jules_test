@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WireGuard Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>WireGuard Manager</h1>
+    </header>
+
+    <main>
+        <div id="user-messages" class="user-messages"></div>
+
+        <section id="server-status-section">
+            <h2>Server Status</h2>
+            <div>Status: <span id="server-status">Loading...</span></div>
+            <div>Public Key: <span id="server-public-key">N/A</span></div>
+            <div>Listening Port: <span id="server-listening-port">N/A</span></div>
+            <button id="refresh-status-btn">Refresh Status</button>
+        </section>
+
+        <hr>
+
+        <section id="interfaces-section">
+            <h2>WireGuard Interfaces</h2>
+            <button id="refresh-interfaces-btn">Refresh Interfaces List</button>
+            <div id="interfaces-list">
+                <!-- Interface items will be dynamically populated here by JS -->
+                <!-- Example of a single interface item structure (for reference):
+                <div class="interface-item" id="interface-item-wg0">
+                    <h3>Interface: <span class="interface-name">wg0</span></h3>
+                    <button class="start-interface-btn" data-interface="wg0">Start</button>
+                    <button class="stop-interface-btn" data-interface="wg0">Stop</button>
+                    <div class="interface-details" id="interface-details-wg0">
+                        <h4>Peers:</h4>
+                        <ul class="peers-list" id="peers-list-wg0">
+                            <li class="peer-item" id="peer-item-wg0-SOMEPEERPUBKEY">
+                                Peer Public Key: <span class="peer-public-key">SOMEPEERPUBKEY</span><br>
+                                Allowed IPs: <span class="peer-allowed-ips">10.0.0.2/32</span><br>
+                                <button class="remove-peer-btn" data-interface="wg0" data-peerkey="SOMEPEERPUBKEY">Remove Peer</button>
+                            </li>
+                        </ul>
+                        <h4>Raw Configuration:</h4>
+                        <pre class="interface-raw-data"></pre>
+                    </div>
+                </div>
+                -->
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="add-peer-section">
+            <h2>Add New Peer</h2>
+            <form id="add-peer-form">
+                <div>
+                    <label for="add-peer-interface-name">Interface Name:</label>
+                    <select id="add-peer-interface-name" name="interfaceName" required>
+                        <!-- Options will be populated by JS -->
+                    </select>
+                </div>
+                <div>
+                    <label for="add-peer-public-key">Peer Public Key:</label>
+                    <input type="text" id="add-peer-public-key" name="publicKey" required>
+                </div>
+                <div>
+                    <label for="add-peer-allowed-ips">Peer Allowed IPs (e.g., 10.0.0.X/32):</label>
+                    <input type="text" id="add-peer-allowed-ips" name="allowedIPs" required>
+                </div>
+                <button type="submit">Add Peer</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <section id="generate-keys-section">
+            <h2>Generate Keypair</h2>
+            <button id="generate-keys-btn">Generate New Keypair</button>
+            <div>
+                <p>Public Key: <code id="generated-public-key"></code></p>
+                <p>Private Key: <code id="generated-private-key"></code></p>
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="generate-config-section">
+            <h2>Generate Peer Configuration</h2>
+            <form id="generate-config-form">
+                <div>
+                    <label for="config-peer-private-key">Peer's Private Key:</label>
+                    <input type="text" id="config-peer-private-key" name="peerPrivateKey" required>
+                </div>
+                <div>
+                    <label for="config-interface-address">Peer's Interface Address (e.g., 10.0.0.X/32):</label>
+                    <input type="text" id="config-interface-address" name="interfaceAddress" required>
+                </div>
+                <div>
+                    <label for="config-peer-preshared-key">Peer's Preshared Key (Optional):</label>
+                    <input type="text" id="config-peer-preshared-key" name="peerPresharedKey">
+                </div>
+                <div>
+                    <label for="config-peer-dns">Peer's DNS Servers (Optional, comma-separated):</label>
+                    <input type="text" id="config-peer-dns" name="peerDnsServers" placeholder="e.g., 1.1.1.1,8.8.8.8">
+                </div>
+                <div>
+                    <label for="config-server-public-key">Server's Public Key:</label>
+                    <input type="text" id="config-server-public-key" name="serverPublicKey" required>
+                </div>
+                <div>
+                    <label for="config-server-endpoint">Server's Endpoint (e.g., your.server.com:51820):</label>
+                    <input type="text" id="config-server-endpoint" name="serverEndpoint" required>
+                </div>
+                <div>
+                    <label for="config-server-allowed-ips">Server's Allowed IPs (for Peer, e.g., 0.0.0.0/0):</label>
+                    <input type="text" id="config-server-allowed-ips" name="serverAllowedIPs" value="0.0.0.0/0, ::/0" required>
+                </div>
+                <button type="submit">Generate Configuration</button>
+            </form>
+            <div>
+                <h3>Generated Peer Configuration:</h3>
+                <textarea id="generated-peer-config" rows="10" cols="80" readonly></textarea>
+            </div>
+            <div>
+                <h4>Configuration QR Code:</h4>
+                <canvas id="peer-config-qr-code"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 WireGuard Manager</p>
+    </footer>
+</div> <!-- .container -->
+    <script src="js/site.js" defer></script>
+</body>
+</html>
