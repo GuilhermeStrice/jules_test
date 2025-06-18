@@ -1,32 +1,23 @@
 # SAFT-PT Generator for C#
 
-A complete C# generator for SAFT-PT (Portuguese Tax Audit File) XML documents based on the official schema version 1.04_01.
-
-## Overview
-
-This library provides a comprehensive solution for generating SAFT-PT XML files that comply with Portuguese tax authority requirements. It includes support for:
-
-- Complete SAFT-PT structure generation
-- Digital signature creation and verification
-- All document types (invoices, movements, working documents, payments)
-- Master files (customers, suppliers, products, tax tables)
-- General ledger entries
-- XML validation and formatting
+A complete C# implementation of the SAFT-PT (Standard Audit File for Tax Purposes - Portugal) generator based on schema version 1.04_01. This library provides comprehensive support for generating Portuguese tax audit files in XML format.
 
 ## Features
 
-- **Complete SAFT-PT Structure**: Implements all elements from the official schema
-- **Digital Signatures**: RSA-based signature creation and verification
-- **Type Safety**: Strongly typed classes for all SAFT-PT elements
-- **XML Serialization**: Proper XML generation with correct namespaces
-- **Validation**: Built-in validation for required fields and data types
-- **Flexible**: Easy to extend and customize for specific business needs
+- **Complete Schema Support**: Implements all elements from SAFT-PT schema version 1.04_01
+- **String-based Implementation**: Uses strings for all schema elements as requested
+- **Digital Signatures**: RSA-based digital signature creation and verification
+- **Data Validation**: Comprehensive validation of audit file structure and data
+- **Multiple Document Types**: Support for invoices, movements, working documents, and payments
+- **Flexible API**: Easy-to-use methods for building audit files
+- **Error Handling**: Robust error handling and validation
 
 ## Installation
 
 1. Add the `SaftPtGenerator.cs` file to your C# project
-2. Ensure you have the following NuGet packages:
+2. Ensure you have the required .NET dependencies:
    - `System.Security.Cryptography`
+   - `System.Xml`
    - `System.Xml.Serialization`
 
 ## Quick Start
@@ -41,54 +32,29 @@ var generator = new SaftPtGenerator();
 generator.InitializeHeader(
     companyId: "123456789",
     taxRegistrationNumber: 123456789,
-    companyName: "Empresa Exemplo Lda",
-    businessName: "Empresa Exemplo",
+    companyName: "Example Company Lda",
+    businessName: "Example Business",
     companyAddress: new Address
     {
-        AddressDetail = "Rua das Flores, 123",
-        City = "Lisboa",
-        PostalCode = "1000-001",
+        BuildingNumber = "123",
+        StreetName = "Example Street",
+        City = "Lisbon",
+        PostalCode = "1000-000",
         Country = "PT"
     },
     fiscalYear: 2024,
     startDate: new DateTime(2024, 1, 1),
     endDate: new DateTime(2024, 12, 31),
     dateCreated: DateTime.Now,
-    taxEntity: "AT",
+    taxEntity: "Lisboa",
     productCompanyTaxId: "123456789",
-    softwareCertificateNumber: 12345,
-    productId: "Software/1.0",
-    productVersion: "1.0"
+    softwareCertificateNumber: 123456,
+    productId: "Example Software",
+    productVersion: "1.0.0"
 );
 
-// Add customer
-generator.AddCustomer(new Customer
-{
-    CustomerID = "CUST001",
-    AccountID = "211",
-    CustomerTaxID = "987654321",
-    CompanyName = "Cliente Exemplo Lda",
-    BillingAddress = new CustomerAddress
-    {
-        AddressDetail = "Rua do Cliente, 456",
-        City = "Porto",
-        PostalCode = "4000-001",
-        Country = "PT"
-    },
-    SelfBillingIndicator = 0
-});
-
-// Add product
-generator.AddProduct(new Product
-{
-    ProductType = "P", // Produtos
-    ProductCode = "PROD001",
-    ProductDescription = "Produto Exemplo",
-    ProductNumberCode = "123456789"
-});
-
 // Add tax table
-generator.SetTaxTable(new TaxTable
+var taxTable = new TaxTable
 {
     TaxTableEntry = new List<TaxTableEntry>
     {
@@ -101,84 +67,60 @@ generator.SetTaxTable(new TaxTable
             TaxPercentage = 23.00m
         }
     }
-});
+};
+generator.SetTaxTable(taxTable);
 
-// Create invoice
-var invoice = new Invoice
+// Add customer
+var customer = new Customer
 {
-    InvoiceNo = "FT 2024/001",
-    ATCUD = "ATCUD123456789",
-    DocumentStatus = new InvoiceDocumentStatus
-    {
-        InvoiceStatus = "N", // Normal
-        InvoiceStatusDate = DateTime.Now,
-        SourceID = "SYS001",
-        SourceBilling = "P" // Documento produzido na aplicação
-    },
-    Hash = "hash123456789",
-    HashControl = "1-AT(FT) 2024/001",
-    InvoiceDate = DateTime.Now,
-    InvoiceType = "FT", // Fatura
-    SpecialRegimes = new SpecialRegimes
-    {
-        SelfBillingIndicator = 0,
-        CashVATSchemeIndicator = 0,
-        ThirdPartiesBillingIndicator = 0
-    },
-    SourceID = "SYS001",
-    SystemEntryDate = DateTime.Now,
     CustomerID = "CUST001",
-    Line = new List<InvoiceLine>
+    CustomerTaxID = "123456789",
+    CompanyName = "Customer Company Lda",
+    BillingAddress = new CustomerAddress
     {
-        new InvoiceLine
-        {
-            LineNumber = 1,
-            ProductCode = "PROD001",
-            ProductDescription = "Produto Exemplo",
-            Quantity = 1,
-            UnitOfMeasure = "UN",
-            UnitPrice = 100.00m,
-            TaxPointDate = DateTime.Now,
-            Description = "Descrição da linha",
-            Tax = new Tax
-            {
-                TaxType = "IVA",
-                TaxCountryRegion = "PT",
-                TaxCode = "NOR",
-                TaxPercentage = 23.00m
-            }
-        }
-    },
-    DocumentTotals = new InvoiceDocumentTotals
-    {
-        TaxPayable = 23.00m,
-        NetTotal = 100.00m,
-        GrossTotal = 123.00m
+        BuildingNumber = "456",
+        StreetName = "Customer Street",
+        City = "Porto",
+        PostalCode = "4000-000",
+        Country = "PT"
     }
 };
+generator.AddCustomer(customer);
 
-// Add source documents
-generator.SetSourceDocuments(new SourceDocuments
-{
-    SalesInvoices = new SalesInvoices
-    {
-        NumberOfEntries = 1,
-        TotalDebit = 123.00m,
-        TotalCredit = 123.00m,
-        Invoice = new List<Invoice> { invoice }
-    }
-});
-
-// Generate the XML file
+// Generate file
 generator.GenerateFile("saft_pt_example.xml");
+```
+
+## Validation
+
+The generator includes comprehensive validation to ensure your SAFT-PT file meets all requirements:
+
+```csharp
+// Validate before generating
+var validationErrors = generator.ValidateAuditFile();
+
+if (validationErrors.Count > 0)
+{
+    Console.WriteLine("Validation errors found:");
+    foreach (var error in validationErrors)
+    {
+        Console.WriteLine($"- {error}");
+    }
+    return;
+}
+
+// Generate with validation (default)
+generator.GenerateFile("saft_pt_example.xml", validate: true);
+
+// Generate without validation
+generator.GenerateFile("saft_pt_example.xml", validate: false);
 ```
 
 ## Digital Signatures
 
-To create digital signatures, you need RSA private and public keys:
+Create and verify digital signatures for documents:
 
 ```csharp
-// Create generator with key paths
 var generator = new SaftPtGenerator(
     privateKeyPath: "private_key.pem",
     publicKeyPath: "public_key.pem"
@@ -247,20 +189,43 @@ bool isValid = generator.VerifySignature(
 
 ## Data Validation
 
-The generator includes validation for:
+The generator validates:
 
-- Required fields
-- Data type constraints
-- Business rule validation
-- XML schema compliance
+- **Required Fields**: All mandatory elements are present
+- **Data Types**: Proper data types for all fields
+- **Business Rules**: Logical validation (e.g., start date before end date)
+- **Relationships**: Valid references between entities
+- **Schema Compliance**: XML structure matches SAFT-PT schema
+
+### Validation Rules
+
+- Header must contain all required company information
+- Tax table must have at least one entry
+- Customers and suppliers must have valid tax IDs
+- Products must have product codes
+- Invoices must have at least one line
+- Document totals must match line totals
+- All referenced entities must exist in master files
 
 ## Error Handling
 
 ```csharp
 try
 {
+    // Validate first
+    var errors = generator.ValidateAuditFile();
+    if (errors.Count > 0)
+    {
+        throw new InvalidOperationException($"Validation failed: {string.Join(", ", errors)}");
+    }
+
+    // Generate file
     generator.GenerateFile("saft_pt_example.xml");
     Console.WriteLine("File generated successfully!");
+}
+catch (InvalidOperationException ex)
+{
+    Console.WriteLine($"Validation error: {ex.Message}");
 }
 catch (Exception ex)
 {

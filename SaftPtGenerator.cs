@@ -43,7 +43,12 @@ namespace SaftPtGenerator
             string productCompanyTaxId,
             int softwareCertificateNumber,
             string productId,
-            string productVersion)
+            string productVersion,
+            string headerComment = null,
+            string telephone = null,
+            string fax = null,
+            string email = null,
+            string website = null)
         {
             _auditFile.Header = new Header
             {
@@ -63,7 +68,12 @@ namespace SaftPtGenerator
                 ProductCompanyTaxID = productCompanyTaxId,
                 SoftwareCertificateNumber = softwareCertificateNumber,
                 ProductID = productId,
-                ProductVersion = productVersion
+                ProductVersion = productVersion,
+                HeaderComment = headerComment,
+                Telephone = telephone,
+                Fax = fax,
+                Email = email,
+                Website = website
             };
         }
 
@@ -148,10 +158,158 @@ namespace SaftPtGenerator
         }
 
         /// <summary>
-        /// Generate the SAFT-PT XML file
+        /// Get the current audit file for inspection
         /// </summary>
-        public void GenerateFile(string filePath)
+        public AuditFile GetAuditFile() => _auditFile;
+
+        /// <summary>
+        /// Validate the audit file structure
+        /// </summary>
+        public List<string> ValidateAuditFile()
         {
+            var errors = new List<string>();
+
+            // Validate Header
+            if (_auditFile.Header == null)
+            {
+                errors.Add("Header is required");
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(_auditFile.Header.CompanyID))
+                    errors.Add("CompanyID is required in Header");
+                if (_auditFile.Header.TaxRegistrationNumber <= 0)
+                    errors.Add("TaxRegistrationNumber must be greater than 0");
+                if (string.IsNullOrEmpty(_auditFile.Header.CompanyName))
+                    errors.Add("CompanyName is required in Header");
+                if (_auditFile.Header.FiscalYear <= 0)
+                    errors.Add("FiscalYear must be greater than 0");
+                if (_auditFile.Header.StartDate >= _auditFile.Header.EndDate)
+                    errors.Add("StartDate must be before EndDate");
+            }
+
+            // Validate MasterFiles
+            if (_auditFile.MasterFiles == null)
+            {
+                errors.Add("MasterFiles is required");
+            }
+            else
+            {
+                // Validate TaxTable
+                if (_auditFile.MasterFiles.TaxTable?.TaxTableEntry == null || 
+                    _auditFile.MasterFiles.TaxTable.TaxTableEntry.Count == 0)
+                {
+                    errors.Add("At least one TaxTableEntry is required");
+                }
+
+                // Validate Customers
+                if (_auditFile.MasterFiles.Customer != null)
+                {
+                    foreach (var customer in _auditFile.MasterFiles.Customer)
+                    {
+                        if (string.IsNullOrEmpty(customer.CustomerID))
+                            errors.Add($"CustomerID is required for customer: {customer.CompanyName}");
+                        if (string.IsNullOrEmpty(customer.CustomerTaxID))
+                            errors.Add($"CustomerTaxID is required for customer: {customer.CustomerID}");
+                    }
+                }
+
+                // Validate Suppliers
+                if (_auditFile.MasterFiles.Supplier != null)
+                {
+                    foreach (var supplier in _auditFile.MasterFiles.Supplier)
+                    {
+                        if (string.IsNullOrEmpty(supplier.SupplierID))
+                            errors.Add($"SupplierID is required for supplier: {supplier.CompanyName}");
+                        if (string.IsNullOrEmpty(supplier.SupplierTaxID))
+                            errors.Add($"SupplierTaxID is required for supplier: {supplier.SupplierID}");
+                    }
+                }
+
+                // Validate Products
+                if (_auditFile.MasterFiles.Product != null)
+                {
+                    foreach (var product in _auditFile.MasterFiles.Product)
+                    {
+                        if (string.IsNullOrEmpty(product.ProductCode))
+                            errors.Add($"ProductCode is required for product: {product.ProductDescription}");
+                    }
+                }
+            }
+
+            // Validate SourceDocuments
+            if (_auditFile.SourceDocuments != null)
+            {
+                // Validate SalesInvoices
+                if (_auditFile.SourceDocuments.SalesInvoices?.Invoice != null)
+                {
+                    foreach (var invoice in _auditFile.SourceDocuments.SalesInvoices.Invoice)
+                    {
+                        if (string.IsNullOrEmpty(invoice.InvoiceNo))
+                            errors.Add("InvoiceNo is required for invoice");
+                        if (string.IsNullOrEmpty(invoice.CustomerID))
+                            errors.Add($"CustomerID is required for invoice: {invoice.InvoiceNo}");
+                        if (invoice.Line == null || invoice.Line.Count == 0)
+                            errors.Add($"At least one line is required for invoice: {invoice.InvoiceNo}");
+                        if (invoice.DocumentTotals == null)
+                            errors.Add($"DocumentTotals is required for invoice: {invoice.InvoiceNo}");
+                    }
+                }
+
+                // Validate MovementOfGoods
+                if (_auditFile.SourceDocuments.MovementOfGoods?.StockMovement != null)
+                {
+                    foreach (var movement in _auditFile.SourceDocuments.MovementOfGoods.StockMovement)
+                    {
+                        if (string.IsNullOrEmpty(movement.DocumentNumber))
+                            errors.Add("DocumentNumber is required for stock movement");
+                        if (movement.Line == null || movement.Line.Count == 0)
+                            errors.Add($"At least one line is required for movement: {movement.DocumentNumber}");
+                    }
+                }
+
+                // Validate WorkingDocuments
+                if (_auditFile.SourceDocuments.WorkingDocuments?.WorkDocument != null)
+                {
+                    foreach (var workDoc in _auditFile.SourceDocuments.WorkingDocuments.WorkDocument)
+                    {
+                        if (string.IsNullOrEmpty(workDoc.DocumentNumber))
+                            errors.Add("DocumentNumber is required for work document");
+                        if (workDoc.Line == null || workDoc.Line.Count == 0)
+                            errors.Add($"At least one line is required for work document: {workDoc.DocumentNumber}");
+                    }
+                }
+
+                // Validate Payments
+                if (_auditFile.SourceDocuments.Payments?.Payment != null)
+                {
+                    foreach (var payment in _auditFile.SourceDocuments.Payments.Payment)
+                    {
+                        if (string.IsNullOrEmpty(payment.PaymentRefNo))
+                            errors.Add("PaymentRefNo is required for payment");
+                        if (payment.Line == null || payment.Line.Count == 0)
+                            errors.Add($"At least one line is required for payment: {payment.PaymentRefNo}");
+                    }
+                }
+            }
+
+            return errors;
+        }
+
+        /// <summary>
+        /// Generate the SAFT-PT XML file with validation
+        /// </summary>
+        public void GenerateFile(string filePath, bool validate = true)
+        {
+            if (validate)
+            {
+                var errors = ValidateAuditFile();
+                if (errors.Count > 0)
+                {
+                    throw new InvalidOperationException($"Validation errors found:\n{string.Join("\n", errors)}");
+                }
+            }
+
             var serializer = new XmlSerializer(typeof(AuditFile));
             var settings = new XmlWriterSettings
             {
@@ -211,11 +369,6 @@ namespace SaftPtGenerator
                 return rsa.VerifyData(dataBytes, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             }
         }
-
-        /// <summary>
-        /// Get the current audit file for inspection
-        /// </summary>
-        public AuditFile GetAuditFile() => _auditFile;
     }
 
     #region Data Classes
