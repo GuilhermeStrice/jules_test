@@ -37,6 +37,6 @@ namespace SAFT.Lib.Documents
         [XmlElement("Line")]
         public List<InvoiceLine> Lines { get; set; }
         [XmlElement]
-        public DocumentTotals DocumentTotals { get; set; }
+        public InvoiceDocumentTotals DocumentTotals { get; set; }
     }
 } 

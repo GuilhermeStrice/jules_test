@@ -36,6 +36,45 @@ namespace SAFT.Validation
             {
                 results.Add(new SAFTValidationResult { Field = nameof(account.TaxonomyCode), Message = "TaxonomyCode, if present, must be between 1 and 999.", Section = "Account" });
             }
+
+            // <xs:assert> GroupingCategory/TaxonomyCode logic
+            // If GroupingCategory != 'GM', TaxonomyCode must be missing. If 'GM', must be present.
+            if (account.GroupingCategory != "GM" && account.TaxonomyCode.HasValue)
+            {
+                results.Add(new SAFTValidationResult {
+                    Field = nameof(account.TaxonomyCode),
+                    Message = "TaxonomyCode must be present only if GroupingCategory is 'GM' (SAF-T <xs:assert> Account 1).",
+                    Section = "Account"
+                });
+            }
+            if (account.GroupingCategory == "GM" && !account.TaxonomyCode.HasValue)
+            {
+                results.Add(new SAFTValidationResult {
+                    Field = nameof(account.TaxonomyCode),
+                    Message = "TaxonomyCode is required when GroupingCategory is 'GM' (SAF-T <xs:assert> Account 1).",
+                    Section = "Account"
+                });
+            }
+
+            // <xs:assert> GroupingCategory/GroupingCode logic
+            // If GroupingCategory == 'GR' or 'AR', GroupingCode must be missing.
+            if ((account.GroupingCategory == "GR" || account.GroupingCategory == "AR") && !string.IsNullOrWhiteSpace(account.GroupingCode))
+            {
+                results.Add(new SAFTValidationResult {
+                    Field = nameof(account.GroupingCode),
+                    Message = "GroupingCode must be missing when GroupingCategory is 'GR' or 'AR' (SAF-T <xs:assert> Account 2).",
+                    Section = "Account"
+                });
+            }
+            // If GroupingCategory == 'GA', 'AA', 'GM', or 'AM', GroupingCode must be present.
+            if ((account.GroupingCategory == "GA" || account.GroupingCategory == "AA" || account.GroupingCategory == "GM" || account.GroupingCategory == "AM") && string.IsNullOrWhiteSpace(account.GroupingCode))
+            {
+                results.Add(new SAFTValidationResult {
+                    Field = nameof(account.GroupingCode),
+                    Message = "GroupingCode is required when GroupingCategory is 'GA', 'AA', 'GM', or 'AM' (SAF-T <xs:assert> Account 2).",
+                    Section = "Account"
+                });
+            }
             // Add more account-specific rules as needed
             return results;
         }

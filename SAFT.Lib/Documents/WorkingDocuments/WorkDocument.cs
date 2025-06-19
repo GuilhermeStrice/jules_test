@@ -35,6 +35,6 @@ namespace SAFT.Lib.Documents
         [XmlElement("Line")]
         public List<WorkDocumentLine> Lines { get; set; }
         [XmlElement]
-        public DocumentTotals DocumentTotals { get; set; }
+        public WorkDocumentTotals DocumentTotals { get; set; }
     }
 } 

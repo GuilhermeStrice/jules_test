@@ -3,7 +3,8 @@ using System.Xml.Serialization;
 
 namespace SAFT.Lib.Documents
 {
-    public class PaymentDocumentTotals
+    [XmlType("DocumentTotals")]
+    public class WorkDocumentTotals
     {
         [XmlElement]
         public decimal TaxPayable { get; set; }
@@ -11,8 +12,6 @@ namespace SAFT.Lib.Documents
         public decimal NetTotal { get; set; }
         [XmlElement]
         public decimal GrossTotal { get; set; }
-        [XmlElement]
-        public Settlement Settlement { get; set; }
         [XmlElement]
         public Currency Currency { get; set; }
         [XmlElement("WithholdingTax")]

@@ -1,5 +1,6 @@
 using System;
 using System.Xml.Serialization;
+using System.Collections.Generic;
 
 namespace SAFT.Lib.Documents
 {
@@ -35,5 +36,7 @@ namespace SAFT.Lib.Documents
         public decimal? SettlementAmount { get; set; }
         [XmlElement]
         public decimal? TaxBase { get; set; }
+        [XmlElement]
+        public List<References> References { get; set; }
     }
 } 

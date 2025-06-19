@@ -49,6 +49,6 @@ namespace SAFT.Lib.Documents
         [XmlElement("Line")]
         public List<StockMovementLine> Lines { get; set; }
         [XmlElement]
-        public DocumentTotals DocumentTotals { get; set; }
+        public MovementDocumentTotals DocumentTotals { get; set; }
     }
 } 

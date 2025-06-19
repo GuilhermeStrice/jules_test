@@ -14,6 +14,8 @@ namespace SAFT.Lib.Files
         public string ProductDescription { get; set; }
         [XmlElement]
         public string ProductNumberCode { get; set; }
+        [XmlElement]
+        public CustomsDetails CustomsDetails { get; set; }
         // CustomsDetails omitted for brevity
     }
 } 

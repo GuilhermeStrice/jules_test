@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using SAFT.Lib;
 
 namespace SAFT.Lib.Files
 {
@@ -16,9 +17,9 @@ namespace SAFT.Lib.Files
         [XmlElement]
         public string Contact { get; set; }
         [XmlElement]
-        public AddressStructure BillingAddress { get; set; }
+        public CustomerAddressStructure BillingAddress { get; set; }
         [XmlElement("ShipToAddress")]
-        public List<AddressStructure> ShipToAddresses { get; set; }
+        public List<CustomerAddressStructure> ShipToAddresses { get; set; }
         [XmlElement]
         public string Telephone { get; set; }
         [XmlElement]
