@@ -21,7 +21,7 @@ namespace SAFT.Lib.Documents
         [XmlElement]
         public DateTime WorkDate { get; set; }
         [XmlElement]
-        public string WorkType { get; set; }
+        public WorkType WorkType { get; set; }
         [XmlElement]
         public string SourceID { get; set; }
         [XmlElement]

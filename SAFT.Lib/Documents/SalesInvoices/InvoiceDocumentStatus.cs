@@ -3,10 +3,10 @@ using System.Xml.Serialization;
 
 namespace SAFT.Lib.Documents
 {
-    public class DocumentStatus
+    public class InvoiceDocumentStatus
     {
         [XmlElement]
-        public string InvoiceStatus { get; set; }
+        public InvoiceStatus InvoiceStatus { get; set; }
         [XmlElement]
         public DateTime InvoiceStatusDate { get; set; }
         [XmlElement]

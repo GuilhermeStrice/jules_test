@@ -1,12 +1,13 @@
 using System;
 using System.Xml.Serialization;
+using SAFT.Lib;
 
 namespace SAFT.Lib.Documents
 {
     public class PaymentMethod
     {
         [XmlElement]
-        public string PaymentMechanism { get; set; }
+        public PaymentMechanism PaymentMechanism { get; set; }
         [XmlElement]
         public decimal PaymentAmount { get; set; }
         [XmlElement]

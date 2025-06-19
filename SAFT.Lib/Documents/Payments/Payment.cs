@@ -17,7 +17,7 @@ namespace SAFT.Lib.Documents
         [XmlElement]
         public DateTime TransactionDate { get; set; }
         [XmlElement]
-        public string PaymentType { get; set; }
+        public PaymentType PaymentType { get; set; }
         [XmlElement]
         public string Description { get; set; }
         [XmlElement]

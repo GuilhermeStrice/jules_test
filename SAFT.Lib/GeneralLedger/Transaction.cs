@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace SAFT.Lib.GeneralLedger
@@ -8,7 +9,7 @@ namespace SAFT.Lib.GeneralLedger
         [XmlElement]
         public string TransactionID { get; set; }
         [XmlElement]
-        public int Period { get; set; }
+        public int? Period { get; set; }
         [XmlElement]
         public DateTime TransactionDate { get; set; }
         [XmlElement]
@@ -18,9 +19,9 @@ namespace SAFT.Lib.GeneralLedger
         [XmlElement]
         public string DocArchivalNumber { get; set; }
         [XmlElement]
-        public string TransactionType { get; set; }
+        public TransactionType TransactionType { get; set; }
         [XmlElement]
-        public DateTime GLPostingDate { get; set; }
+        public string GLPostingDate { get; set; }
         [XmlElement]
         public string CustomerID { get; set; }
         [XmlElement]

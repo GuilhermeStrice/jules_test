@@ -6,7 +6,7 @@ namespace SAFT.Lib.Documents
     public class WorkDocumentStatus
     {
         [XmlElement]
-        public string WorkStatus { get; set; }
+        public WorkStatus WorkStatus { get; set; }
         [XmlElement]
         public DateTime WorkStatusDate { get; set; }
         [XmlElement]

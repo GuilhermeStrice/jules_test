@@ -6,7 +6,7 @@ namespace SAFT.Lib.Documents
     public class PaymentDocumentStatus
     {
         [XmlElement]
-        public string PaymentStatus { get; set; }
+        public PaymentStatus PaymentStatus { get; set; }
         [XmlElement]
         public DateTime PaymentStatusDate { get; set; }
         [XmlElement]

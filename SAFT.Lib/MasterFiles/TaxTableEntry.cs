@@ -6,7 +6,7 @@ namespace SAFT.Lib.Files
     public class TaxTableEntry
     {
         [XmlElement]
-        public string TaxType { get; set; }
+        public TaxType TaxType { get; set; }
         [XmlElement]
         public string TaxCountryRegion { get; set; }
         [XmlElement]
@@ -14,10 +14,10 @@ namespace SAFT.Lib.Files
         [XmlElement]
         public string Description { get; set; }
         [XmlElement]
-        public DateTime? TaxExpirationDate { get; set; }
+        public decimal TaxPercentage { get; set; }
         [XmlElement]
-        public decimal? TaxPercentage { get; set; }
+        public decimal TaxAmount { get; set; }
         [XmlElement]
-        public decimal? TaxAmount { get; set; }
+        public string TaxExpirationDate { get; set; }
     }
 } 

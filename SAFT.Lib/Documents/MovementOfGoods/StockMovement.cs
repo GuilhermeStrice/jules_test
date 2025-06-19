@@ -21,7 +21,7 @@ namespace SAFT.Lib.Documents
         [XmlElement]
         public DateTime MovementDate { get; set; }
         [XmlElement]
-        public string MovementType { get; set; }
+        public MovementType MovementType { get; set; }
         [XmlElement]
         public DateTime SystemEntryDate { get; set; }
         [XmlElement]

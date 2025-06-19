@@ -1,7 +1,16 @@
+using System.Xml.Serialization;
+
 namespace SAFT.Lib
 {
+    /// <summary>
+    /// N para normal, A para Anulado
+    /// </summary>
     public enum MovementStatus
     {
-        N, T, A, F, R
+        [XmlEnum("N")]
+        Normal,
+        
+        [XmlEnum("A")]
+        Cancelled
     }
 } 

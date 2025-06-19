@@ -6,7 +6,7 @@ namespace SAFT.Lib.Documents
     public class MovementDocumentStatus
     {
         [XmlElement]
-        public string MovementStatus { get; set; }
+        public MovementStatus MovementStatus { get; set; }
         [XmlElement]
         public DateTime MovementStatusDate { get; set; }
         [XmlElement]

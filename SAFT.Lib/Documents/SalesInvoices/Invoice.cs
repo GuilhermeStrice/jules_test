@@ -11,7 +11,7 @@ namespace SAFT.Lib.Documents
         [XmlElement]
         public string ATCUD { get; set; }
         [XmlElement]
-        public DocumentStatus DocumentStatus { get; set; }
+        public InvoiceDocumentStatus DocumentStatus { get; set; }
         [XmlElement]
         public string Hash { get; set; }
         [XmlElement]
@@ -21,7 +21,7 @@ namespace SAFT.Lib.Documents
         [XmlElement]
         public DateTime InvoiceDate { get; set; }
         [XmlElement]
-        public string InvoiceType { get; set; }
+        public InvoiceType InvoiceType { get; set; }
         [XmlElement]
         public SpecialRegimes SpecialRegimes { get; set; }
         [XmlElement]

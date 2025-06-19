@@ -5,7 +5,7 @@ namespace SAFT.Lib.Files
     public class Product
     {
         [XmlElement]
-        public string ProductType { get; set; }
+        public ProductType ProductType { get; set; }
         [XmlElement]
         public string ProductCode { get; set; }
         [XmlElement]

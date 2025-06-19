@@ -11,7 +11,7 @@ namespace SAFT.Lib
         [XmlElement]
         public int TaxRegistrationNumber { get; set; }
         [XmlElement]
-        public string TaxAccountingBasis { get; set; }
+        public TaxAccountingBasis TaxAccountingBasis { get; set; }
         [XmlElement]
         public string CompanyName { get; set; }
         [XmlElement]
