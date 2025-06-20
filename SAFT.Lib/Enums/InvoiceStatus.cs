@@ -1,25 +1,22 @@
-using System.Xml.Serialization;
-
-namespace SAFT.Lib
+namespace SAFT.Lib.Enums
 {
     /// <summary>
-    /// N para Normal, S para Autofaturacao, A para Documento anulado, R para Documento de resumo doutros documentos criados noutras aplicacoes e gerado nesta aplicacao, F para Documento faturado
+    /// Estado do documento SalesInvoices
+    /// N para Normal, S para Autofaturacao, A para Documento anulado, 
+    /// R para Documento de resumo doutros documentos criados noutras aplicacoes e gerado nesta aplicacao, 
+    /// F para Documento faturado
     /// </summary>
     public enum InvoiceStatus
     {
-        [XmlEnum("N")]
-        Normal,
-        
-        [XmlEnum("S")]
-        SelfBilling,
-        
-        [XmlEnum("A")]
-        Cancelled,
-        
-        [XmlEnum("R")]
-        Summary,
-        
-        [XmlEnum("F")]
-        Billed
+        /// <summary>Normal</summary>
+        N,
+        /// <summary>Autofaturacao</summary>
+        S,
+        /// <summary>Documento anulado</summary>
+        A,
+        /// <summary>Documento de resumo doutros documentos criados noutras aplicacoes e gerado nesta aplicacao</summary>
+        R,
+        /// <summary>Documento faturado</summary>
+        F
     }
 } 

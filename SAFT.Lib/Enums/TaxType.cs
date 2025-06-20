@@ -1,19 +1,16 @@
-using System.Xml.Serialization;
-
-namespace SAFT.Lib
+namespace SAFT.Lib.Enums
 {
     /// <summary>
-    /// IRS para Imposto Sobre o Rendimento das Pessoas Singulares, IRC para Imposto Sobre o Rendimento das Pessoas colectivas, IS para Imposto do selo
+    /// Tipo de Imposto
+    /// IVA para Imposto sobre o Valor Acrescentado, IS para Imposto do Selo, NS para Nao Sujeito
     /// </summary>
     public enum TaxType
     {
-        [XmlEnum("IRS")]
-        PersonalIncomeTax,
-        
-        [XmlEnum("IRC")]
-        CorporateIncomeTax,
-        
-        [XmlEnum("IS")]
-        StampDuty
+        /// <summary>Imposto sobre o Valor Acrescentado</summary>
+        IVA,
+        /// <summary>Imposto do Selo</summary>
+        IS,
+        /// <summary>Nao Sujeito</summary>
+        NS
     }
 } 

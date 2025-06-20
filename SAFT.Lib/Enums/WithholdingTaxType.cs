@@ -1,19 +1,18 @@
-using System.Xml.Serialization;
-
-namespace SAFT.Lib
+namespace SAFT.Lib.Enums
 {
     /// <summary>
-    /// IRS para Imposto Sobre o Rendimento das Pessoas Singulares, IRC para Imposto Sobre o Rendimento das Pessoas colectivas, IS para Imposto do selo
+    /// Codigo do tipo de imposto retido
+    /// IRS para Imposto Sobre o Rendimento das Pessoas Singulares, 
+    /// IRC para Imposto Sobre o Rendimento das Pessoas colectivas, 
+    /// IS para Imposto do selo
     /// </summary>
     public enum WithholdingTaxType
     {
-        [XmlEnum("IRS")]
-        PersonalIncomeTax,
-        
-        [XmlEnum("IRC")]
-        CorporateIncomeTax,
-        
-        [XmlEnum("IS")]
-        StampDuty
+        /// <summary>Imposto Sobre o Rendimento das Pessoas Singulares</summary>
+        IRS,
+        /// <summary>Imposto Sobre o Rendimento das Pessoas colectivas</summary>
+        IRC,
+        /// <summary>Imposto do selo</summary>
+        IS
     }
 } 

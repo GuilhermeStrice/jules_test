@@ -1,25 +1,17 @@
-using System.Xml.Serialization;
-
-namespace SAFT.Lib
+namespace SAFT.Lib.Enums
 {
     /// <summary>
-    /// N para Normal, T para Por conta de terceiros, A para Documento anulado, F para Documento faturado, quando para este documento tambem existe na tabela 4.1. para Documentos comerciais a clientes (SalesInvoices) o correspondente do tipo fatura ou fatura simplificada, R para Documento de resumo doutros documentos criados noutras aplicacoes e gerado nesta aplicacao
+    /// Estado do documento WorkingDocuments
+    /// N para Normal, A para Anulado, F para faturado (quando para este documento tambem existe na tabela 4.1. 
+    /// o correspondente do tipo fatura ou fatura simplificada)
     /// </summary>
     public enum WorkStatus
     {
-        [XmlEnum("N")]
-        Normal,
-        
-        [XmlEnum("T")]
-        ThirdParty,
-        
-        [XmlEnum("A")]
-        Cancelled,
-        
-        [XmlEnum("F")]
-        Billed,
-        
-        [XmlEnum("R")]
-        Summary
+        /// <summary>Normal</summary>
+        N,
+        /// <summary>Anulado</summary>
+        A,
+        /// <summary>Faturado</summary>
+        F
     }
 } 
