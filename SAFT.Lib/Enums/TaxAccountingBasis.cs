@@ -1,3 +1,5 @@
+using System.Xml.Serialization;
+
 namespace SAFT.Lib.Enums
 {
     /// <summary>
@@ -11,20 +13,28 @@ namespace SAFT.Lib.Enums
     public enum TaxAccountingBasis
     {
         /// <summary>Contabilidade</summary>
+        [XmlEnum("C")]
         C,
         /// <summary>Faturacao emitida por terceiros</summary>
+        [XmlEnum("E")]
         E,
         /// <summary>Faturacao</summary>
+        [XmlEnum("F")]
         F,
         /// <summary>Contabilidade integrada com a faturacao</summary>
+        [XmlEnum("I")]
         I,
         /// <summary>Faturacao parcial</summary>
+        [XmlEnum("P")]
         P,
         /// <summary>Recibos (para dados ate 2012-12-31)</summary>
+        [XmlEnum("R")]
         R,
         /// <summary>Autofaturacao</summary>
+        [XmlEnum("S")]
         S,
         /// <summary>Documentos de transporte (para dados ate 2012-12-31)</summary>
+        [XmlEnum("T")]
         T
     }
 } 

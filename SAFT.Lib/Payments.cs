@@ -215,7 +215,7 @@ namespace SAFT.Lib
         /// The source payment information.
         /// </summary>
         [XmlElement("SourcePayment")]
-        public SourcePayment SourcePayment { get; set; } = new SourcePayment();
+        public SourcePayment SourcePayment { get; set; }
     }
 
     /// <summary>
@@ -355,6 +355,4 @@ namespace SAFT.Lib
         [XmlElement("SettlementAmount")]
         public decimal SettlementAmount { get; set; }
     }
-
-    public class SourcePayment { /* TODO: Implement */ }
 } 

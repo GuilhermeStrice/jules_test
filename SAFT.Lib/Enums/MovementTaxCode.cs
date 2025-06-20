@@ -7,7 +7,6 @@
  * </xs:simpleType>
  */
 
-using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 
 namespace SAFT.Lib.Enums
@@ -16,28 +15,30 @@ namespace SAFT.Lib.Enums
     /// SAFT Portugal Movement Tax Code
     /// Valid values: RED, INT, NOR, ISE, OUT, NS
     /// </summary>
-    public class MovementTaxCode
+    public enum MovementTaxCode
     {
-        private string _value = string.Empty;
-
-        public MovementTaxCode() { }
-
-        public MovementTaxCode(string value)
-        {
-            Value = value;
-        }
-
-        [XmlText]
-        [RegularExpression(@"^(RED|INT|NOR|ISE|OUT|NS)$", ErrorMessage = "MovementTaxCode must match pattern: RED|INT|NOR|ISE|OUT|NS")]
-        public string Value
-        {
-            get => _value;
-            set => _value = value ?? string.Empty;
-        }
-
-        public static implicit operator string(MovementTaxCode movementTaxCode) => movementTaxCode.Value;
-        public static implicit operator MovementTaxCode(string value) => new MovementTaxCode(value);
-
-        public override string ToString() => Value;
+        /// <summary>Reduced rate</summary>
+        [XmlEnum("RED")]
+        RED,
+        
+        /// <summary>Intermediate rate</summary>
+        [XmlEnum("INT")]
+        INT,
+        
+        /// <summary>Normal rate</summary>
+        [XmlEnum("NOR")]
+        NOR,
+        
+        /// <summary>Exempt</summary>
+        [XmlEnum("ISE")]
+        ISE,
+        
+        /// <summary>Other</summary>
+        [XmlEnum("OUT")]
+        OUT,
+        
+        /// <summary>Not subject to tax</summary>
+        [XmlEnum("NS")]
+        NS
     }
 } 
