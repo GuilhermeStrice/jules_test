@@ -244,7 +244,7 @@ namespace SAFT.Lib
         /// The general ledger account identifier.
         /// </summary>
         [XmlElement("AccountID")]
-        public string AccountID { get; set; } = string.Empty;
+        public GLAccountID AccountID { get; set; } = new GLAccountID();
 
         /// <summary>
         /// The source document identifier (optional).
@@ -286,7 +286,7 @@ namespace SAFT.Lib
         /// The general ledger account identifier.
         /// </summary>
         [XmlElement("AccountID")]
-        public string AccountID { get; set; } = string.Empty;
+        public GLAccountID AccountID { get; set; } = new GLAccountID();
 
         /// <summary>
         /// The source document identifier (optional).

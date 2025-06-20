@@ -12,7 +12,7 @@ namespace SAFT.Lib
         /// The account ID.
         /// </summary>
         [XmlElement("AccountID")]
-        public string AccountID { get; set; } = string.Empty;
+        public GLAccountID AccountID { get; set; } = new GLAccountID();
 
         /// <summary>
         /// The account description.
@@ -54,12 +54,12 @@ namespace SAFT.Lib
         /// The grouping code (optional).
         /// </summary>
         [XmlElement("GroupingCode")]
-        public string? GroupingCode { get; set; }
+        public GLAccountID? GroupingCode { get; set; }
 
         /// <summary>
         /// The taxonomy code (optional).
         /// </summary>
         [XmlElement("TaxonomyCode")]
-        public string? TaxonomyCode { get; set; }
+        public TaxonomyCode? TaxonomyCode { get; set; }
     }
 }

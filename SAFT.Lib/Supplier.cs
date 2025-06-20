@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using SAFT.Lib.Enums;
 
 namespace SAFT.Lib
 {
@@ -13,7 +14,7 @@ namespace SAFT.Lib
         public string SupplierID { get; set; }
 
         [XmlElement("AccountID")]
-        public string AccountID { get; set; }
+        public GLAccountID AccountID { get; set; } = new GLAccountID();
 
         [XmlElement("SupplierTaxID")]
         public string SupplierTaxID { get; set; }

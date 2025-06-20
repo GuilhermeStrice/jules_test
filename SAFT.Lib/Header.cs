@@ -33,6 +33,7 @@
  */
 
 using System.Xml.Serialization;
+using SAFT.Lib.Enums;
 
 namespace SAFT.Lib
 {
@@ -49,10 +50,10 @@ namespace SAFT.Lib
         public string CompanyID { get; set; } = string.Empty;
 
         [XmlElement("TaxRegistrationNumber")]
-        public string TaxRegistrationNumber { get; set; } = string.Empty;
+        public PortugueseVatNumber TaxRegistrationNumber { get; set; } = new PortugueseVatNumber();
 
         [XmlElement("TaxAccountingBasis")]
-        public string TaxAccountingBasis { get; set; } = string.Empty;
+        public TaxAccountingBasis TaxAccountingBasis { get; set; }
 
         [XmlElement("CompanyName")]
         public string CompanyName { get; set; } = string.Empty;
