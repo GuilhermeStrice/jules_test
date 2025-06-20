@@ -63,12 +63,4 @@ namespace SAFT.Lib
         [XmlElement("CustomsDetails")]
         public CustomsDetails? CustomsDetails { get; set; }
     }
-
-    /// <summary>
-    /// Placeholder for CustomsDetails type - to be implemented based on XSD schema.
-    /// </summary>
-    public class CustomsDetails
-    {
-        // TODO: Implement based on XSD schema for CustomsDetails type
-    }
 } 

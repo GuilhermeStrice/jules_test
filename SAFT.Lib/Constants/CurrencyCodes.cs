@@ -217,5 +217,8 @@ namespace SAFT.Lib.Constants
         public const string Zambian_Kwacha_Old = "ZMK";
         public const string Zimbabwean_Dollar_Old = "ZWD";
         public const string Zimbabwean_Dollar_New = "ZWR";
+        
+        // Portuguese Currency (SAF-T specific)
+        public const string Euro = "EUR";
     }
 } 

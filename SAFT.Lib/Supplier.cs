@@ -45,12 +45,4 @@ namespace SAFT.Lib
         [XmlElement("SelfBillingIndicator")]
         public int SelfBillingIndicator { get; set; }
     }
-
-    /// <summary>
-    /// Placeholder for AddressStructure. Replace with actual implementation.
-    /// </summary>
-    public class AddressStructure
-    {
-        // Define properties according to the XSD for AddressStructure
-    }
 } 

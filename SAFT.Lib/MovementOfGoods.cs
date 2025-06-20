@@ -411,7 +411,4 @@ namespace SAFT.Lib
         [XmlElement("Currency")]
         public Currency? Currency { get; set; }
     }
-
-    // Placeholder classes for movement-specific types
-    public class MovementTax { /* TODO: Implement */ }
 } 

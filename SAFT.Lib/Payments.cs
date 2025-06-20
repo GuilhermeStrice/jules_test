@@ -356,7 +356,5 @@ namespace SAFT.Lib
         public decimal SettlementAmount { get; set; }
     }
 
-    // Placeholder classes for payment-specific types
-    public class PaymentTax { /* TODO: Implement */ }
     public class SourcePayment { /* TODO: Implement */ }
 } 

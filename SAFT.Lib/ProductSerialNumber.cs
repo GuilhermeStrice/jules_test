@@ -1,20 +1,29 @@
 /*
  * Original XSD Schema:
- * <xs:element name="ProductSerialNumber" type="ProductSerialNumber" minOccurs="0"/>
+ * <!-- Estrutura de numero de serie do produto-->
+ * <xs:complexType name="ProductSerialNumber">
+ * <xs:sequence>
+ * <xs:element ref="SerialNumber" maxOccurs="unbounded"/>
+ * </xs:sequence>
+ * </xs:complexType>
  * 
- * Description: Product serial number information for document lines.
+ * Description: Product serial number structure for document lines.
  */
 
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace SAFT.Lib
 {
     /// <summary>
-    /// Represents product serial number information for document lines.
+    /// Represents product serial number structure for document lines.
     /// </summary>
     public class ProductSerialNumber
     {
-        // TODO: Implement based on XSD schema for ProductSerialNumber type
-        // This is a placeholder that needs to be implemented when the XSD schema is provided
+        /// <summary>
+        /// Collection of serial numbers (unbounded).
+        /// </summary>
+        [XmlElement("SerialNumber")]
+        public List<string> SerialNumbers { get; set; } = new List<string>();
     }
 } 

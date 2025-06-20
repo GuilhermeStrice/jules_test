@@ -1,8 +1,14 @@
 /*
  * Original XSD Schema:
- * <xs:element name="References" type="References" minOccurs="0" maxOccurs="unbounded"/>
+ * <!-- Estrutura de referencias a outros documentos em documentos retificativos de faturas-->
+ * <xs:complexType name="References">
+ * <xs:sequence>
+ * <xs:element ref="Reference" minOccurs="0"/>
+ * <xs:element ref="Reason" minOccurs="0"/>
+ * </xs:sequence>
+ * </xs:complexType>
  * 
- * Description: References for document lines.
+ * Description: References structure for rectifying invoice documents.
  */
 
 using System.Xml.Serialization;
@@ -10,11 +16,20 @@ using System.Xml.Serialization;
 namespace SAFT.Lib
 {
     /// <summary>
-    /// Represents references for document lines.
+    /// Represents references structure for rectifying invoice documents.
     /// </summary>
     public class References
     {
-        // TODO: Implement based on XSD schema for References type
-        // This is a placeholder that needs to be implemented when the XSD schema is provided
+        /// <summary>
+        /// The reference to another document (optional).
+        /// </summary>
+        [XmlElement("Reference")]
+        public string? Reference { get; set; }
+
+        /// <summary>
+        /// The reason for the reference (optional).
+        /// </summary>
+        [XmlElement("Reason")]
+        public string? Reason { get; set; }
     }
 } 
