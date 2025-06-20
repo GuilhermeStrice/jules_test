@@ -1,5 +1,73 @@
+/*
+<!-- Versao do estrutura do ficheiro -->
+<xs:element name="AuditFileVersion">
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:pattern value="1\.04_01"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+
+<!-- Indicador de regime de IVA de Caixa -->
+<xs:element name="CashVATSchemeIndicator">
+<xs:simpleType>
+<xs:restriction base="xs:integer">
+<xs:minInclusive value="0"/>
+<xs:maxInclusive value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+
+<!-- Ano Fiscal -->
+<xs:element name="FiscalYear">
+<xs:simpleType>
+<xs:restriction base="xs:integer">
+<xs:minInclusive value="2000"/>
+<xs:maxInclusive value="9999"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+
+<!-- Periodo contabilistico do documento -->
+<xs:element name="Period">
+<xs:simpleType>
+<xs:restriction base="xs:integer">
+<xs:minInclusive value="1"/>
+<xs:maxInclusive value="12"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+
+<!-- Indicador de Autofaturacao -->
+<xs:element name="SelfBillingIndicator">
+<xs:simpleType>
+<xs:restriction base="xs:integer">
+<xs:minInclusive value="0"/>
+<xs:maxInclusive value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+
+<!--
+ Indicador de faturacao emitida em nome e por conta de terceiros 
+-->
+<xs:element name="ThirdPartiesBillingIndicator">
+<xs:simpleType>
+<xs:restriction base="xs:integer">
+<xs:minInclusive value="0"/>
+<xs:maxInclusive value="1"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+*/
+
 namespace SAFT.Lib.Constants
 {
+    /// <summary>
+    /// SAFTConstants - Constants for SAFT (Standard Audit File - Tax) Portugal
+    /// Contains fixed values, validation patterns, and ranges from the XSD schema.
+    /// This includes audit file version, fiscal year ranges, period ranges, and various indicators.
+    /// </summary>
     /// <summary>
     /// Constants for SAFT (Standard Audit File - Tax) Portugal
     /// </summary>
