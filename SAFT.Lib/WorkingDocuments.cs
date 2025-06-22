@@ -209,7 +209,7 @@ namespace SAFT.Lib
         /// The source billing information.
         /// </summary>
         [XmlElement("SourceBilling")]
-        public SourceBilling SourceBilling { get; set; } = new SourceBilling();
+        public SourceBilling SourceBilling { get; set; }
     }
 
     /// <summary>

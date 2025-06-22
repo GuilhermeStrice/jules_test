@@ -29,7 +29,7 @@ namespace SAFT.Lib
         /// The type of movement tax.
         /// </summary>
         [XmlElement("TaxType")]
-        public MovementTaxType TaxType { get; set; } = new MovementTaxType();
+        public MovementTaxType TaxType { get; set; }
 
         /// <summary>
         /// The country or region for which this tax applies.
@@ -41,7 +41,7 @@ namespace SAFT.Lib
         /// The movement tax code.
         /// </summary>
         [XmlElement("TaxCode")]
-        public MovementTaxCode TaxCode { get; set; } = new MovementTaxCode();
+        public MovementTaxCode TaxCode { get; set; }
 
         /// <summary>
         /// The tax percentage.

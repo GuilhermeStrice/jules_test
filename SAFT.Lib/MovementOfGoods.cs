@@ -181,13 +181,13 @@ namespace SAFT.Lib
         /// Ship to information (optional).
         /// </summary>
         [XmlElement("ShipTo")]
-        public string? ShipTo { get; set; }
+        public ShippingPointStructure? ShipTo { get; set; }
 
         /// <summary>
         /// Ship from information (optional).
         /// </summary>
         [XmlElement("ShipFrom")]
-        public string? ShipFrom { get; set; }
+        public ShippingPointStructure? ShipFrom { get; set; }
 
         /// <summary>
         /// Movement end time (optional).
@@ -265,7 +265,7 @@ namespace SAFT.Lib
         /// The source billing information.
         /// </summary>
         [XmlElement("SourceBilling")]
-        public SourceBilling SourceBilling { get; set; } = new SourceBilling();
+        public SourceBilling SourceBilling { get; set; }
     }
 
     /// <summary>

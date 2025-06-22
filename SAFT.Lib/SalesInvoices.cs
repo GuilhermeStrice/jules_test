@@ -144,13 +144,13 @@ namespace SAFT.Lib
         /// Ship to information (optional).
         /// </summary>
         [XmlElement("ShipTo")]
-        public string? ShipTo { get; set; }
+        public ShippingPointStructure? ShipTo { get; set; }
 
         /// <summary>
         /// Ship from information (optional).
         /// </summary>
         [XmlElement("ShipFrom")]
-        public string? ShipFrom { get; set; }
+        public ShippingPointStructure? ShipFrom { get; set; }
 
         /// <summary>
         /// Movement end time (optional).
