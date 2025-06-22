@@ -117,6 +117,7 @@
  * Description: Main SAF-T audit file structure with header, master files, general ledger entries, and source documents.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -125,7 +126,7 @@ namespace SAFT.Lib
     /// <summary>
     /// Represents the main SAF-T audit file structure.
     /// </summary>
-    [XmlRoot("AuditFile")]
+    [XmlRoot("AuditFile", Namespace = "urn:OECD:StandardAuditFile-Tax:PT_1.04_01")]
     public class AuditFile
     {
         /// <summary>
