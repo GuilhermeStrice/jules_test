@@ -1,3 +1,28 @@
+/*
+ * Original XSD Schema:
+ * <!-- Estrutura de Cliente (AuditFile.MasterFiles.Customer) -->
+ * <xs:element name="Customer">
+ *   <xs:complexType>
+ *     <xs:sequence>
+ *       <xs:element ref="CustomerID"/>
+ *       <xs:element ref="AccountID"/>
+ *       <xs:element ref="CustomerTaxID"/>
+ *       <xs:element ref="CompanyName"/>
+ *       <xs:element ref="Contact" minOccurs="0"/>
+ *       <xs:element name="BillingAddress" type="CustomerAddressStructure"/>
+ *       <xs:element ref="ShipToAddress" minOccurs="0" maxOccurs="unbounded"/>
+ *       <xs:element ref="Telephone" minOccurs="0"/>
+ *       <xs:element ref="Fax" minOccurs="0"/>
+ *       <xs:element ref="Email" minOccurs="0"/>
+ *       <xs:element ref="Website" minOccurs="0"/>
+ *       <xs:element ref="SelfBillingIndicator"/>
+ *     </xs:sequence>
+ *   </xs:complexType>
+ * </xs:element>
+ *
+ * Description: Customer structure for master files, including identification, address, and contact details.
+ */
+
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
