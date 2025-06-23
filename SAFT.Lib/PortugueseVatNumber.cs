@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 
 namespace SAFT.Lib
@@ -21,6 +22,8 @@ namespace SAFT.Lib
         }
 
         [XmlText]
+        [Range(100000000, 999999999, ErrorMessage = "Portuguese VAT Number must be between 100000000 and 999999999")]
+        [Required(ErrorMessage = "Portuguese VAT Number is required")]
         public int Value
         {
             get => _value;
