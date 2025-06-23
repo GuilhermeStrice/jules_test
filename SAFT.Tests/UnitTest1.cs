@@ -3,6 +3,8 @@ using SAFT.Lib;
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
+using System;
+using System.Linq;
 
 namespace SAFT.Tests
 {
@@ -97,6 +99,130 @@ namespace SAFT.Tests
                 Assert.NotEmpty(invalidErrors);
                 // Should have both XSD 1.0 errors (for xs:assert) and potentially XSD 1.1 assertion errors
                 Assert.Contains(invalidErrors, error => error.Contains("XMLSchema") || error.Contains("assert"));
+            }
+            finally
+            {
+                // Clean up the temporary schema file
+                if (File.Exists(schemaPath))
+                    File.Delete(schemaPath);
+            }
+        }
+        
+        [Fact]
+        public void TestIdentityConstraintsWithMinimalSchema()
+        {
+            // Create a minimal schema with identity constraints (no namespaces to avoid complexity)
+            var schema = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
+    <xs:element name=""Root"">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name=""Customer"" maxOccurs=""unbounded"">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name=""CustomerID"" type=""xs:string""/>
+                            <xs:element name=""Name"" type=""xs:string""/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name=""Invoice"" maxOccurs=""unbounded"">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name=""InvoiceNo"" type=""xs:string""/>
+                            <xs:element name=""CustomerID"" type=""xs:string""/>
+                            <xs:element name=""Amount"" type=""xs:decimal""/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name=""CustomerIDConstraint"">
+            <xs:selector xpath=""Customer""/>
+            <xs:field xpath=""CustomerID""/>
+        </xs:unique>
+        <xs:unique name=""InvoiceNoConstraint"">
+            <xs:selector xpath=""Invoice""/>
+            <xs:field xpath=""InvoiceNo""/>
+        </xs:unique>
+        <xs:keyref name=""InvoiceCustomerIDConstraint"" refer=""CustomerIDConstraint"">
+            <xs:selector xpath=""Invoice""/>
+            <xs:field xpath=""CustomerID""/>
+        </xs:keyref>
+    </xs:element>
+</xs:schema>";
+            
+            // Write the schema to a temporary file
+            var schemaPath = "test_identity_schema.xsd";
+            File.WriteAllText(schemaPath, schema);
+            
+            try
+            {
+                // Test XML that should pass validation (valid identity constraints)
+                var validXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<Root>
+    <Customer>
+        <CustomerID>CUST001</CustomerID>
+        <Name>Customer 1</Name>
+    </Customer>
+    <Customer>
+        <CustomerID>CUST002</CustomerID>
+        <Name>Customer 2</Name>
+    </Customer>
+    <Invoice>
+        <InvoiceNo>INV001</InvoiceNo>
+        <CustomerID>CUST001</CustomerID>
+        <Amount>100.00</Amount>
+    </Invoice>
+    <Invoice>
+        <InvoiceNo>INV002</InvoiceNo>
+        <CustomerID>CUST002</CustomerID>
+        <Amount>200.00</Amount>
+    </Invoice>
+</Root>";
+                
+                var validErrors = SchemaValidator.Validate(validXml, schemaPath);
+                // Should have no identity constraint errors for valid XML
+                Assert.DoesNotContain(validErrors, error => error.Contains("duplicate key sequence") || error.Contains("key or unique identity constraint") || error.Contains("Keyref fails to refer"));
+                
+                // Test XML that should fail validation (duplicate CustomerID)
+                var invalidXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<Root>
+    <Customer>
+        <CustomerID>CUST001</CustomerID>
+        <Name>Customer 1</Name>
+    </Customer>
+    <Customer>
+        <CustomerID>CUST001</CustomerID>
+        <Name>Customer 2</Name>
+    </Customer>
+    <Invoice>
+        <InvoiceNo>INV001</InvoiceNo>
+        <CustomerID>CUST001</CustomerID>
+        <Amount>100.00</Amount>
+    </Invoice>
+</Root>";
+                
+                var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
+                // The validation should detect the duplicate CustomerID using .NET's built-in validator
+                Assert.Contains(invalidErrors, error => error.Contains("duplicate key sequence") && error.Contains("CustomerIDConstraint"));
+                
+                // Test XML that should fail validation (invalid keyref - CustomerID not found)
+                var invalidKeyrefXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<Root>
+    <Customer>
+        <CustomerID>CUST001</CustomerID>
+        <Name>Customer 1</Name>
+    </Customer>
+    <Invoice>
+        <InvoiceNo>INV001</InvoiceNo>
+        <CustomerID>CUST999</CustomerID>
+        <Amount>100.00</Amount>
+    </Invoice>
+</Root>";
+                
+                var keyrefErrors = SchemaValidator.Validate(invalidKeyrefXml, schemaPath);
+                // The validation should detect the invalid keyref using .NET's built-in validator
+                Assert.Contains(keyrefErrors, error => error.Contains("Keyref fails to refer"));
             }
             finally
             {
