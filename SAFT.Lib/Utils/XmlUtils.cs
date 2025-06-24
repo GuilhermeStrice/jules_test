@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using System.Xml.Schema;
 using System.Collections.Generic;
 using System.Linq;
+using SAFT.Lib.Utils;
 
 namespace SAFT.Lib.Utils
 {
@@ -67,38 +68,21 @@ namespace SAFT.Lib.Utils
         }
 
         /// <summary>
-        /// Serializes object to XML file
+        /// Serializes object to XML file in the configured output directory.
         /// </summary>
         /// <typeparam name="T">Type of object to serialize</typeparam>
         /// <param name="obj">Object to serialize</param>
-        /// <param name="filePath">Path to output file</param>
+        /// <param name="fileName">File name (not path)</param>
         /// <param name="encoding">Encoding to use (default: UTF-8)</param>
         /// <param name="indent">Whether to indent the XML (default: true)</param>
-        public static void SerializeToFile<T>(T obj, string filePath, Encoding? encoding = null, bool indent = true)
+        public static void SerializeToFile<T>(T obj, string fileName, Encoding? encoding = null, bool indent = true)
         {
-            if (obj == null)
-                throw new ArgumentNullException(nameof(obj));
-            if (string.IsNullOrWhiteSpace(filePath))
-                throw new ArgumentException("File path cannot be null or empty", nameof(filePath));
-
-            encoding ??= Encoding.UTF8;
-
-            var serializer = new XmlSerializer(typeof(T));
-            var settings = new XmlWriterSettings
-            {
-                Encoding = encoding,
-                Indent = indent,
-                IndentChars = "  ",
-                OmitXmlDeclaration = false
-            };
-
-            using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-            using var xmlWriter = XmlWriter.Create(fileStream, settings);
-            
-            var ns = new XmlSerializerNamespaces();
-            ns.Add("", ""); // Remove default namespace
-            
-            serializer.Serialize(xmlWriter, obj, ns);
+            if (string.IsNullOrWhiteSpace(fileName))
+                throw new ArgumentException("File name cannot be null or empty", nameof(fileName));
+            var outputDir = ConfigurationManager.Current.OutputDirectory;
+            Directory.CreateDirectory(outputDir);
+            var filePath = Path.Combine(outputDir, fileName);
+            SerializeToFile(obj, filePath, encoding, indent);
         }
 
         /// <summary>

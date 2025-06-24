@@ -30,6 +30,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
+using SAFT.Lib.Utils;
 
 namespace SAFT.Lib
 {
@@ -84,13 +85,13 @@ namespace SAFT.Lib
         public string? Region { get; set; }
 
         /// <summary>
-        /// The country (ISO 3166 1-alpha-2 country code).
+        /// The country code (ISO 3166 1-alpha-2).
         /// </summary>
         [XmlElement("Country")]
         [Required(ErrorMessage = "Country is required")]
         [StringLength(2, MinimumLength = 2, ErrorMessage = "Country must be exactly 2 characters")]
         [RegularExpression(@"^[A-Z]{2}$", ErrorMessage = "Country must be a valid ISO 3166 1-alpha-2 country code")]
-        public string Country { get; set; } = string.Empty;
+        public string Country { get; set; } = ConfigurationManager.Current.DefaultCountryCode;
     }
 
     /// <summary>

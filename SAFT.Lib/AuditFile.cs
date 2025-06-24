@@ -120,6 +120,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using SAFT.Lib.Utils;
 
 namespace SAFT.Lib
 {
@@ -152,6 +153,31 @@ namespace SAFT.Lib
         /// </summary>
         [XmlElement("SourceDocuments")]
         public SourceDocuments? SourceDocuments { get; set; }
+
+        /// <summary>
+        /// Creates a default audit file with configuration values.
+        /// </summary>
+        /// <returns>A new AuditFile instance with default values from configuration.</returns>
+        public static AuditFile CreateDefault()
+        {
+            return new AuditFile
+            {
+                Header = Header.CreateDefault(),
+                MasterFiles = new MasterFiles(),
+                GeneralLedgerEntries = new GeneralLedgerEntries(),
+                SourceDocuments = new SourceDocuments()
+            };
+        }
+
+        /// <summary>
+        /// Saves the audit file to the configured output directory.
+        /// </summary>
+        /// <param name="fileName">Optional filename (defaults to "saft_{fiscalYear}.xml")</param>
+        public void SaveToOutputDirectory(string? fileName = null)
+        {
+            fileName ??= $"saft_{Header.FiscalYear}.xml";
+            XmlUtils.SerializeToFile(this, fileName);
+        }
     }
 
     /// <summary>

@@ -5,6 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Text.RegularExpressions;
+using SAFT.Lib.Utils;
 
 namespace SAFT.Lib
 {
@@ -15,24 +16,22 @@ namespace SAFT.Lib
     public static class SchemaValidator
     {
         /// <summary>
-        /// Validates the provided XML against the schema at <paramref name="schemaPath"/>.
+        /// Validates the provided XML against the schema at <paramref name="schemaPath"/> or the configured default.
         /// </summary>
         /// <param name="xml">The XML document contents.</param>
-        /// <param name="schemaPath">Path to the schema XSD file.</param>
+        /// <param name="schemaPath">Path to the schema XSD file (optional, uses configuration if null/empty).</param>
         /// <returns>A list of validation error messages. The list is empty when the XML is valid.</returns>
-        public static List<string> Validate(string xml, string schemaPath)
+        public static List<string> Validate(string xml, string? schemaPath = null)
         {
             var errors = new List<string>();
-            
+            schemaPath = string.IsNullOrWhiteSpace(schemaPath) ? ConfigurationManager.Current.SchemaPath : schemaPath;
             try
             {
                 // Use .NET's XmlSchemaSet for basic XSD 1.0 validation
                 var schemaSet = new XmlSchemaSet();
                 schemaSet.Add(null, schemaPath);
-                
                 var xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(xml);
-                
                 xmlDoc.Schemas = schemaSet;
                 xmlDoc.Validate((sender, e) =>
                 {

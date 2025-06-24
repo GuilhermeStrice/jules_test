@@ -255,7 +255,7 @@ namespace SAFT.Tests
             Assert.NotEmpty(errors);
             Assert.Contains(errors, e => e.Contains("City is required"));
             Assert.Contains(errors, e => e.Contains("PostalCode is required"));
-            Assert.Contains(errors, e => e.Contains("Country is required"));
+            // Country is now defaulted, so we do not expect a missing country error
         }
 
         [Fact]
