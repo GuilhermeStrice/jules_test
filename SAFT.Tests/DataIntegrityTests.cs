@@ -47,7 +47,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_unique_schema.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -117,7 +117,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_key_schema.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -200,7 +200,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_keyref_schema.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -283,7 +283,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_complex_schema.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -400,7 +400,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_saft_schema.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -512,7 +512,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_error_messages.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try

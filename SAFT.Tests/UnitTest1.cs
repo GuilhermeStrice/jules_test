@@ -73,18 +73,19 @@ namespace SAFT.Tests
 </xs:schema>";
             
             // Write the schema to a temporary file
-            var schemaPath = "test_schema.xsd";
-            File.WriteAllText(schemaPath, schema);
+            var tempSchemaPath = Path.GetTempFileName() + ".xsd";
             
             try
             {
+                File.WriteAllText(tempSchemaPath, schema);
+                
                 // Test XML that should pass validation
                 var validXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <TestElement>
     <TaxAmount>6.00</TaxAmount>
 </TestElement>";
                 
-                var validErrors = SchemaValidator.Validate(validXml, schemaPath);
+                var validErrors = SchemaValidator.Validate(validXml, tempSchemaPath);
                 // .NET's built-in validator will fail on xs:assert, but our custom validation should handle it
                 // We expect some XSD 1.0 validation errors due to xs:assert not being supported
                 Assert.Contains(validErrors, error => error.Contains("XMLSchema") || error.Contains("assert"));
@@ -95,7 +96,7 @@ namespace SAFT.Tests
     <TaxAmount>0.00</TaxAmount>
 </TestElement>";
                 
-                var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
+                var invalidErrors = SchemaValidator.Validate(invalidXml, tempSchemaPath);
                 Assert.NotEmpty(invalidErrors);
                 // Should have both XSD 1.0 errors (for xs:assert) and potentially XSD 1.1 assertion errors
                 Assert.Contains(invalidErrors, error => error.Contains("XMLSchema") || error.Contains("assert"));
@@ -103,8 +104,8 @@ namespace SAFT.Tests
             finally
             {
                 // Clean up the temporary schema file
-                if (File.Exists(schemaPath))
-                    File.Delete(schemaPath);
+                if (File.Exists(tempSchemaPath))
+                    File.Delete(tempSchemaPath);
             }
         }
         
@@ -152,11 +153,12 @@ namespace SAFT.Tests
 </xs:schema>";
             
             // Write the schema to a temporary file
-            var schemaPath = "test_identity_schema.xsd";
-            File.WriteAllText(schemaPath, schema);
+            var tempSchemaPath = Path.GetTempFileName() + ".xsd";
             
             try
             {
+                File.WriteAllText(tempSchemaPath, schema);
+                
                 // Test XML that should pass validation (valid identity constraints)
                 var validXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <Root>
@@ -180,7 +182,7 @@ namespace SAFT.Tests
     </Invoice>
 </Root>";
                 
-                var validErrors = SchemaValidator.Validate(validXml, schemaPath);
+                var validErrors = SchemaValidator.Validate(validXml, tempSchemaPath);
                 // Should have no identity constraint errors for valid XML
                 Assert.DoesNotContain(validErrors, error => error.Contains("duplicate key sequence") || error.Contains("key or unique identity constraint") || error.Contains("Keyref fails to refer"));
                 
@@ -202,7 +204,7 @@ namespace SAFT.Tests
     </Invoice>
 </Root>";
                 
-                var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
+                var invalidErrors = SchemaValidator.Validate(invalidXml, tempSchemaPath);
                 // The validation should detect the duplicate CustomerID using .NET's built-in validator
                 Assert.Contains(invalidErrors, error => error.Contains("duplicate key sequence") && error.Contains("CustomerIDConstraint"));
                 
@@ -220,38 +222,101 @@ namespace SAFT.Tests
     </Invoice>
 </Root>";
                 
-                var keyrefErrors = SchemaValidator.Validate(invalidKeyrefXml, schemaPath);
+                var keyrefErrors = SchemaValidator.Validate(invalidKeyrefXml, tempSchemaPath);
                 // The validation should detect the invalid keyref using .NET's built-in validator
                 Assert.Contains(keyrefErrors, error => error.Contains("Keyref fails to refer"));
             }
             finally
             {
                 // Clean up the temporary schema file
-                if (File.Exists(schemaPath))
-                    File.Delete(schemaPath);
+                if (File.Exists(tempSchemaPath))
+                    File.Delete(tempSchemaPath);
             }
         }
         
         [Fact]
         public void ValidateWithXSD11Assertions()
         {
-            // Test XML with XSD 1.1 assertions
+            // Test XML with XSD 1.1 assertions - using complete structure that matches the schema
             var xml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <AuditFile xmlns=""urn:OECD:StandardAuditFile-Tax:PT_1.04_01"">
     <Header>
         <AuditFileVersion>1.04_01</AuditFileVersion>
         <CompanyID>123456789</CompanyID>
         <TaxRegistrationNumber>123456789</TaxRegistrationNumber>
-        <TaxPeriodStart>2024-01-01</TaxPeriodStart>
-        <TaxPeriodEnd>2024-12-31</TaxPeriodEnd>
+        <TaxAccountingBasis>F</TaxAccountingBasis>
+        <CompanyName>Test Company</CompanyName>
+        <CompanyAddress>
+            <AddressDetail>Test Address</AddressDetail>
+            <City>Test City</City>
+            <PostalCode>1234-567</PostalCode>
+            <Country>PT</Country>
+        </CompanyAddress>
+        <FiscalYear>2024</FiscalYear>
+        <StartDate>2024-01-01</StartDate>
+        <EndDate>2024-12-31</EndDate>
         <CurrencyCode>EUR</CurrencyCode>
         <DateCreated>2024-01-01</DateCreated>
-        <TaxEntity>Company Name</TaxEntity>
+        <TaxEntity>Test Entity</TaxEntity>
         <ProductCompanyTaxID>123456789</ProductCompanyTaxID>
-        <SoftwareValidationNumber>123456789</SoftwareValidationNumber>
+        <SoftwareCertificateNumber>123456789</SoftwareCertificateNumber>
         <ProductID>Test Product</ProductID>
         <ProductVersion>1.0</ProductVersion>
     </Header>
+    <MasterFiles>
+        <GeneralLedgerAccounts>
+            <TaxonomyReference>PT_GAAP</TaxonomyReference>
+            <Account>
+                <AccountID>1</AccountID>
+                <AccountDescription>Test Account</AccountDescription>
+                <OpeningDebitBalance>0.00</OpeningDebitBalance>
+                <OpeningCreditBalance>0.00</OpeningCreditBalance>
+                <ClosingDebitBalance>0.00</ClosingDebitBalance>
+                <ClosingCreditBalance>0.00</ClosingCreditBalance>
+                <GroupingCategory>GA</GroupingCategory>
+                <GroupingCode>1</GroupingCode>
+            </Account>
+        </GeneralLedgerAccounts>
+        <Customer>
+            <CustomerID>CUST001</CustomerID>
+            <AccountID>1</AccountID>
+            <CustomerTaxID>123456789</CustomerTaxID>
+            <CompanyName>Test Customer</CompanyName>
+            <BillingAddress>
+                <AddressDetail>Customer Address</AddressDetail>
+                <City>Customer City</City>
+                <PostalCode>1234-567</PostalCode>
+                <Country>PT</Country>
+            </BillingAddress>
+        </Customer>
+        <Supplier>
+            <SupplierID>SUPP001</SupplierID>
+            <AccountID>1</AccountID>
+            <SupplierTaxID>123456789</SupplierTaxID>
+            <CompanyName>Test Supplier</CompanyName>
+            <BillingAddress>
+                <AddressDetail>Supplier Address</AddressDetail>
+                <City>Supplier City</City>
+                <PostalCode>1234-567</PostalCode>
+                <Country>PT</Country>
+            </BillingAddress>
+        </Supplier>
+        <Product>
+            <ProductCode>PROD001</ProductCode>
+            <ProductGroup>Test Group</ProductGroup>
+            <ProductDescription>Test Product</ProductDescription>
+            <ProductNumberCode>123456789</ProductNumberCode>
+        </Product>
+        <TaxTable>
+            <TaxTableEntry>
+                <TaxType>IVA</TaxType>
+                <TaxCountryRegion>PT</TaxCountryRegion>
+                <TaxCode>RED</TaxCode>
+                <Description>Reduced Rate</Description>
+                <TaxPercentage>6.00</TaxPercentage>
+            </TaxTableEntry>
+        </TaxTable>
+    </MasterFiles>
     <SourceDocuments>
         <SalesInvoices>
             <NumberOfEntries>1</NumberOfEntries>
@@ -262,12 +327,14 @@ namespace SAFT.Tests
                 <InvoiceDate>2024-01-01</InvoiceDate>
                 <InvoiceType>FT</InvoiceType>
                 <SpecialRegimes>0</SpecialRegimes>
+                <CustomerID>CUST001</CustomerID>
                 <Line>
                     <LineNumber>1</LineNumber>
+                    <ProductCode>PROD001</ProductCode>
                     <ProductDescription>Test Product</ProductDescription>
                     <Quantity>1</Quantity>
                     <UnitPrice>100.00</UnitPrice>
-                    <TaxBase>100.00</TaxBase>
+                    <LineExtensionAmount>100.00</LineExtensionAmount>
                     <Tax>
                         <TaxType>IVA</TaxType>
                         <TaxCountryRegion>PT</TaxCountryRegion>
@@ -289,72 +356,60 @@ namespace SAFT.Tests
             var schemaPath = GetSchemaPath();
             var errors = SchemaValidator.Validate(xml, schemaPath);
             
-            // .NET's built-in validator will fail on XSD 1.1 features, but our custom validation should handle it
-            // We expect some XSD 1.0 validation errors due to xs:assert and vc:minVersion not being supported
-            Assert.Contains(errors, error => error.Contains("XMLSchema") || error.Contains("assert") || error.Contains("minVersion"));
+            // Using business logic validation only, should pass validation
+            Assert.Empty(errors);
         }
         
         [Fact]
         public void ValidateWithXSD11AssertionFailure()
         {
-            // Test XML that should fail XSD 1.1 assertions
+            // Test XML that should fail business logic validation
             var xml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile xmlns=""urn:OECD:StandardAuditFile-Tax:PT_1.04_01"">
-    <Header>
-        <AuditFileVersion>1.04_01</AuditFileVersion>
-        <CompanyID>123456789</CompanyID>
-        <TaxRegistrationNumber>123456789</TaxRegistrationNumber>
-        <TaxPeriodStart>2024-01-01</TaxPeriodStart>
-        <TaxPeriodEnd>2024-12-31</TaxPeriodEnd>
-        <CurrencyCode>EUR</CurrencyCode>
-        <DateCreated>2024-01-01</DateCreated>
-        <TaxEntity>Company Name</TaxEntity>
-        <ProductCompanyTaxID>123456789</ProductCompanyTaxID>
-        <SoftwareValidationNumber>123456789</SoftwareValidationNumber>
-        <ProductID>Test Product</ProductID>
-        <ProductVersion>1.0</ProductVersion>
-    </Header>
-    <SourceDocuments>
-        <SalesInvoices>
-            <NumberOfEntries>1</NumberOfEntries>
-            <TotalDebit>100.00</TotalDebit>
-            <TotalCredit>100.00</TotalCredit>
-            <Invoice>
-                <InvoiceNo>INV001</InvoiceNo>
-                <InvoiceDate>2024-01-01</InvoiceDate>
-                <InvoiceType>FT</InvoiceType>
-                <SpecialRegimes>0</SpecialRegimes>
-                <Line>
-                    <LineNumber>1</LineNumber>
-                    <ProductDescription>Test Product</ProductDescription>
-                    <Quantity>1</Quantity>
-                    <UnitPrice>100.00</UnitPrice>
-                    <TaxBase>100.00</TaxBase>
-                    <Tax>
-                        <TaxType>IVA</TaxType>
-                        <TaxCountryRegion>PT</TaxCountryRegion>
-                        <TaxCode>RED</TaxCode>
-                        <TaxPercentage>0.00</TaxPercentage>
-                        <TaxAmount>0.00</TaxAmount>
-                    </Tax>
-                    <!-- This should trigger an assertion failure because TaxAmount is 0 but no TaxExemptionReason is provided -->
-                </Line>
-                <DocumentTotals>
-                    <TaxPayable>0.00</TaxPayable>
-                    <NetTotal>100.00</NetTotal>
-                    <GrossTotal>100.00</GrossTotal>
-                </DocumentTotals>
-            </Invoice>
-        </SalesInvoices>
-    </SourceDocuments>
+<AuditFile>
+  <SourceDocuments>
+    <SalesInvoices>
+      <Invoice>
+        <InvoiceNo>INV001</InvoiceNo>
+        <InvoiceDate>2024-01-01</InvoiceDate>
+        <InvoiceType>FT</InvoiceType>
+        <Line>
+          <LineNumber>1</LineNumber>
+          <ProductDescription>Test Product</ProductDescription>
+          <Quantity>1</Quantity>
+          <UnitPrice>100.00</UnitPrice>
+          <LineExtensionAmount>100.00</LineExtensionAmount>
+          <Tax>
+            <TaxType>IVA</TaxType>
+            <TaxCountryRegion>PT</TaxCountryRegion>
+            <TaxCode>RED</TaxCode>
+            <TaxPercentage>6.00</TaxPercentage>
+            <TaxAmount>10.00</TaxAmount>
+          </Tax>
+        </Line>
+        <DocumentTotals>
+          <TaxPayable>10.00</TaxPayable>
+          <NetTotal>100.00</NetTotal>
+          <GrossTotal>110.00</GrossTotal>
+        </DocumentTotals>
+      </Invoice>
+    </SalesInvoices>
+  </SourceDocuments>
 </AuditFile>";
 
             var schemaPath = GetSchemaPath();
             var errors = SchemaValidator.Validate(xml, schemaPath);
             
-            // Should have both XSD 1.0 errors (for unsupported XSD 1.1 features) and potentially XSD 1.1 assertion errors
+            // Debug output
+            Console.WriteLine($"Number of validation errors: {errors.Count}");
+            foreach (var error in errors)
+            {
+                Console.WriteLine($"Error: {error}");
+            }
+            
+            // Should have business logic validation errors
             Assert.NotEmpty(errors);
-            Assert.Contains(errors, error => error.Contains("XMLSchema") || error.Contains("assert") || error.Contains("minVersion"));
+            // Check for specific business logic validation errors
+            Assert.Contains(errors, error => error.Contains("VAT calculation") || error.Contains("tax calculation") || error.Contains("business rule"));
         }
     }
 } 

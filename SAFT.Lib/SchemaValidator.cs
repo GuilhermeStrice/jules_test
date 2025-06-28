@@ -16,43 +16,42 @@ namespace SAFT.Lib
     public static class SchemaValidator
     {
         /// <summary>
-        /// Validates the provided XML against the schema at <paramref name="schemaPath"/> or the configured default.
+        /// Validates the XML document using the schema path from configuration.
         /// </summary>
         /// <param name="xml">The XML document contents.</param>
-        /// <param name="schemaPath">Path to the schema XSD file (optional, uses configuration if null/empty).</param>
         /// <returns>A list of validation error messages. The list is empty when the XML is valid.</returns>
-        public static List<string> Validate(string xml, string? schemaPath = null)
+        public static List<string> Validate(string xml)
+        {
+            var schemaPath = ConfigurationManager.Current.SchemaPath;
+            return Validate(xml, schemaPath);
+        }
+
+        /// <summary>
+        /// Validates the XML document using the specified schema path.
+        /// </summary>
+        /// <param name="xml">The XML document contents.</param>
+        /// <param name="schemaPath">Path to the schema file.</param>
+        /// <returns>A list of validation error messages. The list is empty when the XML is valid.</returns>
+        public static List<string> Validate(string xml, string schemaPath)
         {
             var errors = new List<string>();
-            schemaPath = string.IsNullOrWhiteSpace(schemaPath) ? ConfigurationManager.Current.SchemaPath : schemaPath;
             try
             {
-                // Use .NET's XmlSchemaSet for basic XSD 1.0 validation
-                var schemaSet = new XmlSchemaSet();
-                schemaSet.Add(null, schemaPath);
                 var xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(xml);
-                xmlDoc.Schemas = schemaSet;
-                xmlDoc.Validate((sender, e) =>
-                {
-                    if (e.Severity == XmlSeverityType.Error)
-                    {
-                        errors.Add($"Schema validation error: {e.Message}");
-                    }
-                    else if (e.Severity == XmlSeverityType.Warning)
-                    {
-                        errors.Add($"Schema validation warning: {e.Message}");
-                    }
-                });
-                
+
+                // Perform .NET's built-in XSD validation
+                var xsdErrors = ValidateXsd(xmlDoc, schemaPath);
+                errors.AddRange(xsdErrors);
+
                 // Perform XSD 1.1 assertion validation
                 var assertionErrors = ValidateXsd11Assertions(xmlDoc, schemaPath);
                 errors.AddRange(assertionErrors);
-                
+
                 // Perform identity constraint validation
                 var identityErrors = ValidateIdentityConstraints(xmlDoc, schemaPath);
                 errors.AddRange(identityErrors);
-                
+
                 // Perform business logic validation
                 var businessErrors = ValidateBusinessLogic(xmlDoc, schemaPath);
                 errors.AddRange(businessErrors);
@@ -65,7 +64,6 @@ namespace SAFT.Lib
             {
                 errors.Add($"Validation error: {ex.Message}");
             }
-            
             return errors;
         }
         
@@ -773,35 +771,43 @@ namespace SAFT.Lib
             {
                 foreach (XmlNode invoice in xmlDoc.SelectNodes("//Invoice"))
                 {
+                    // Support both <Line> and <InvoiceLine>
                     var lines = invoice.SelectNodes(".//Line");
+                    var invoiceLines = invoice.SelectNodes(".//InvoiceLine");
+                    var allLines = new List<XmlNode>();
+                    foreach (XmlNode l in lines) allLines.Add(l);
+                    foreach (XmlNode l in invoiceLines) allLines.Add(l);
                     var totals = invoice.SelectSingleNode(".//DocumentTotals");
-                    if (lines != null && totals != null)
+                    if (allLines.Count > 0 && totals != null)
                     {
                         decimal calculatedTaxPayable = 0;
                         decimal calculatedNetTotal = 0;
-                        foreach (XmlNode line in lines)
+                        foreach (XmlNode line in allLines)
                         {
                             var taxBase = line.SelectSingleNode(".//TaxBase");
+                            var lineExtensionAmount = line.SelectSingleNode(".//LineExtensionAmount");
                             var tax = line.SelectSingleNode(".//Tax");
-                            if (taxBase != null && tax != null)
+                            decimal baseAmount = 0;
+                            if (taxBase != null && decimal.TryParse(taxBase.InnerText, out decimal tb))
+                                baseAmount = tb;
+                            else if (lineExtensionAmount != null && decimal.TryParse(lineExtensionAmount.InnerText, out decimal le))
+                                baseAmount = le;
+                            if (baseAmount > 0 && tax != null)
                             {
-                                if (decimal.TryParse(taxBase.InnerText, out decimal baseAmount))
+                                calculatedNetTotal += baseAmount;
+                                var taxPercentage = tax.SelectSingleNode(".//TaxPercentage");
+                                var taxAmount = tax.SelectSingleNode(".//TaxAmount");
+                                if (taxPercentage != null && taxAmount != null)
                                 {
-                                    calculatedNetTotal += baseAmount;
-                                    var taxPercentage = tax.SelectSingleNode(".//TaxPercentage");
-                                    var taxAmount = tax.SelectSingleNode(".//TaxAmount");
-                                    if (taxPercentage != null && taxAmount != null)
+                                    if (decimal.TryParse(taxPercentage.InnerText, out decimal percentage) &&
+                                        decimal.TryParse(taxAmount.InnerText, out decimal amount))
                                     {
-                                        if (decimal.TryParse(taxPercentage.InnerText, out decimal percentage) &&
-                                            decimal.TryParse(taxAmount.InnerText, out decimal amount))
+                                        var expectedTax = Math.Round(baseAmount * percentage / 100, 2);
+                                        if (Math.Abs(amount - expectedTax) >= 0.01m)
                                         {
-                                            var expectedTax = Math.Round(baseAmount * percentage / 100, 2);
-                                            if (Math.Abs(amount - expectedTax) >= 0.01m)
-                                            {
-                                                errors.Add($"VAT calculation error: Expected tax amount {expectedTax} for base {baseAmount} at {percentage}%, but got {amount}");
-                                            }
-                                            calculatedTaxPayable += amount;
+                                            errors.Add($"VAT calculation error: Expected tax amount {expectedTax} for base {baseAmount} at {percentage}%, but got {amount}");
                                         }
+                                        calculatedTaxPayable += amount;
                                     }
                                 }
                             }
@@ -1206,14 +1212,17 @@ namespace SAFT.Lib
         private static List<string> ValidateQuantityAndUnitPrice(XmlDocument xmlDoc)
         {
             var errors = new List<string>();
-            
+            // Support both <Line> and <InvoiceLine>
             var lines = xmlDoc.SelectNodes("//Line");
-            foreach (XmlNode line in lines)
+            var invoiceLines = xmlDoc.SelectNodes("//InvoiceLine");
+            var allLines = new List<XmlNode>();
+            foreach (XmlNode l in lines) allLines.Add(l);
+            foreach (XmlNode l in invoiceLines) allLines.Add(l);
+            foreach (XmlNode line in allLines)
             {
                 var quantity = line.SelectSingleNode(".//Quantity");
                 var unitPrice = line.SelectSingleNode(".//UnitPrice");
                 var lineExtensionAmount = line.SelectSingleNode(".//LineExtensionAmount");
-                
                 if (quantity != null && unitPrice != null && lineExtensionAmount != null)
                 {
                     if (decimal.TryParse(quantity.InnerText, out decimal qty) &&
@@ -1228,7 +1237,6 @@ namespace SAFT.Lib
                     }
                 }
             }
-            
             return errors;
         }
         
@@ -1238,8 +1246,13 @@ namespace SAFT.Lib
         private static List<string> ValidateTaxCalculationAccuracy(XmlDocument xmlDoc)
         {
             var errors = new List<string>();
+            // Support both <Line> and <InvoiceLine>
             var lines = xmlDoc.SelectNodes("//Line");
-            foreach (XmlNode line in lines)
+            var invoiceLines = xmlDoc.SelectNodes("//InvoiceLine");
+            var allLines = new List<XmlNode>();
+            foreach (XmlNode l in lines) allLines.Add(l);
+            foreach (XmlNode l in invoiceLines) allLines.Add(l);
+            foreach (XmlNode line in allLines)
             {
                 var lineExtensionAmount = line.SelectSingleNode(".//LineExtensionAmount");
                 var taxBase = line.SelectSingleNode(".//TaxBase");
@@ -1362,6 +1375,33 @@ namespace SAFT.Lib
                         }
                     }
                 }
+            }
+            return errors;
+        }
+
+        /// <summary>
+        /// Performs .NET's built-in XSD validation.
+        /// </summary>
+        /// <param name="xmlDoc">The XML document to validate.</param>
+        /// <param name="schemaPath">Path to the schema file.</param>
+        /// <returns>List of XSD validation errors.</returns>
+        private static List<string> ValidateXsd(XmlDocument xmlDoc, string schemaPath)
+        {
+            var errors = new List<string>();
+            try
+            {
+                var schema = new XmlSchemaSet();
+                schema.Add(null, schemaPath);
+                
+                xmlDoc.Schemas = schema;
+                xmlDoc.Validate((sender, e) =>
+                {
+                    errors.Add(e.Message);
+                });
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"XSD validation error: {ex.Message}");
             }
             return errors;
         }

@@ -58,7 +58,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_vat_calculation.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -136,7 +136,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_tax_codes.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -208,7 +208,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_vat_number.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -263,7 +263,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_document_sequence.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -352,7 +352,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_fiscal_year.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -438,7 +438,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_currency.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -514,7 +514,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_tax_exemption.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try

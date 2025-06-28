@@ -1,26 +1,28 @@
+using System;
 using Xunit;
-using SAFT.Lib.Utils;
 using SAFT.Lib;
+using SAFT.Lib.Utils;
 
 namespace SAFT.Tests
 {
     public class DefaultValueTests
     {
         [Fact]
-        public void TestHeader_UsesConfigDefaults()
+        public void TestAddressStructure_UsesConfigDefaultCountry()
         {
-            var config = ConfigurationManager.Current;
-            var header = Header.CreateDefault();
-            Assert.Equal(config.DefaultCurrencyCode, header.CurrencyCode);
-            Assert.Equal(config.DefaultCountryCode, header.CompanyAddress.Country);
+            ConfigurationManager.Current.DefaultCountryCode = "PT";
+            var address = new SAFT.Lib.AddressStructure { City = "Lisbon" };
+            Assert.Equal("PT", address.Country);
         }
 
         [Fact]
-        public void TestAddressStructure_UsesConfigDefaultCountry()
+        public void TestHeader_UsesConfigDefaults()
         {
-            var config = ConfigurationManager.Current;
-            var address = new AddressStructure();
-            Assert.Equal(config.DefaultCountryCode, address.Country);
+            // Ensure config is reset to default before test
+            ConfigurationManager.Load();
+            var header = new Header();
+            Assert.Equal("PT", header.CompanyAddress.Country);
+            Assert.Equal("EUR", header.CurrencyCode);
         }
     }
 } 

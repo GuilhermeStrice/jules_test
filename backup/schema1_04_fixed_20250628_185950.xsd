@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:doc="http://www.w3.org/2000/10/XMLSchema-doc" xmlns:ns="urn:OECD:StandardAuditFile-Tax:PT_1.04_01" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" attributeFormDefault="unqualified" elementFormDefault="qualified" id="SAF-T_PT" targetNamespace="urn:OECD:StandardAuditFile-Tax:PT_1.04_01" version="1.04_01" vc:minVersion="1.1">
+<xs:annotation>
+<xs:documentation>
+<doc:Title>Standard Audit File - Portuguese Version</doc:Title>
+<doc:Subject>Standard Audit File - Portuguese Version</doc:Subject>
+<doc:Copyright>Copyright OECD</doc:Copyright>
+<doc:Version>
+<doc:Number>1.04_01</doc:Number>
+<doc:Status>Production</doc:Status>
+</doc:Version>
+<doc:Author>Autoridade Tributaria e Aduaneira</doc:Author>
+<doc:ModificationDate>2022-05-17</doc:ModificationDate>
+</xs:documentation>
+</xs:annotation>
+<!-- Estrutura do ficheiro SAFT-PT-->
+<xs:element name="AuditFile">
+<xs:complexType>
+<xs:sequence>
+<xs:element ref="Header" minOccurs="1"/>
+<xs:element name="MasterFiles">
+<xs:complexType>
+<xs:sequence>
+<xs:element ref="GeneralLedgerAccounts" minOccurs="0"/>
+<xs:element ref="Customer" minOccurs="0"/>
+<xs:element ref="Supplier" minOccurs="0"/>
+<xs:element ref="Product" minOccurs="0"/>
+<xs:element ref="TaxTable" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element ref="GeneralLedgerEntries" minOccurs="0"/>
+<xs:element ref="SourceDocuments" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+<!-- Constraint-->
+<xs:unique name="AccountIDConstraint">
+<xs:selector xpath="ns:MasterFiles/ns:GeneralLedgerAccounts/ns:Account"/>
+<xs:field xpath="ns:AccountID"/>
+</xs:unique>
+<xs:keyref name="GroupingCodeConstraint" refer="AccountIDConstraint">
+<xs:selector xpath="ns:MasterFiles/ns:GeneralLedgerAccounts/ns:Account"/>
+<xs:field xpath="ns:GroupingCode"/>
+</xs:keyref>
+<xs:unique name="CustomerIDConstraint">
+<xs:selector xpath="ns:MasterFiles/ns:Customer"/>
+<xs:field xpath="ns:CustomerID"/>
+</xs:unique>
+<xs:unique name="SupplierIDConstraint">
+<xs:selector xpath="ns:MasterFiles/ns:Supplier"/>
+<xs:field xpath="ns:SupplierID"/>
+</xs:unique>
+<xs:unique name="ProductCodeConstraint">
+<xs:selector xpath="ns:MasterFiles/ns:Product"/>
+<xs:field xpath="ns:ProductCode"/>
+</xs:unique>
+<xs:keyref name="GeneralLedgerEntriesDebitLineAccountIDConstraint" refer="AccountIDConstraint">
+<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction/ns:Lines/ns:DebitLine"/>
+<xs:field xpath="ns:AccountID"/>
+</xs:keyref>
+<xs:keyref name="GeneralLedgerEntriesCreditLineAccountIDConstraint" refer="AccountIDConstraint">
+<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction/ns:Lines/ns:CreditLine"/>
+<xs:field xpath="ns:AccountID"/>
+</xs:keyref>
+<xs:keyref name="GeneralLedgerEntriesCustomerIDConstraint" refer="CustomerIDConstraint">
+<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction"/>
+<xs:field xpath="ns:CustomerID"/>
+</xs:keyref>
+<xs:unique name="GeneralLedgerEntriesJournalIdConstraint">
+<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal"/>
+<xs:field xpath="ns:JournalID"/>
+</xs:unique>
+<xs:keyref name="GeneralLedgerEntriesSupplierIDConstraint" refer="SupplierIDConstraint">
+<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction"/>
+<xs:field xpath="ns:SupplierID"/>
+</xs:keyref>
+<xs:unique name="GeneralLedgerEntriesTransactionIdConstraint">
+<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction"/>
+<xs:field xpath="ns:TransactionID"/>
+</xs:unique>
+<xs:unique name="InvoiceNoConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:SalesInvoices/ns:Invoice"/>
+<xs:field xpath="ns:InvoiceNo"/>
+</xs:unique>
+<xs:keyref name="InvoiceCustomerIDConstraint" refer="CustomerIDConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:SalesInvoices/ns:Invoice"/>
+<xs:field xpath="ns:CustomerID"/>
+</xs:keyref>
+<xs:keyref name="InvoiceProductCodeConstraint" refer="ProductCodeConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:SalesInvoices/ns:Invoice/ns:Line"/>
+<xs:field xpath="ns:ProductCode"/>
+</xs:keyref>
+<xs:unique name="DocumentNumberConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:MovementOfGoods/ns:StockMovement"/>
+<xs:field xpath="ns:DocumentNumber"/>
+</xs:unique>
+<xs:keyref name="StockMovementCustomerIDConstraint" refer="CustomerIDConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:MovementOfGoods/ns:StockMovement"/>
+<xs:field xpath="ns:CustomerID"/>
+</xs:keyref>
+<xs:keyref name="StockMovementSupplierIDConstraint" refer="SupplierIDConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:MovementOfGoods/ns:StockMovement"/>
+<xs:field xpath="ns:SupplierID"/>
+</xs:keyref>
+<xs:keyref name="StockMovementProductCodeConstraint" refer="ProductCodeConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:MovementOfGoods/ns:StockMovement/ns:Line"/>
+<xs:field xpath="ns:ProductCode"/>
+</xs:keyref>
+<xs:unique name="WorkDocumentDocumentNumberConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:WorkingDocuments/ns:WorkDocument"/>
+<xs:field xpath="ns:DocumentNumber"/>
+</xs:unique>
+<xs:keyref name="WorkDocumentDocumentCustomerIDConstraint" refer="CustomerIDConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:WorkingDocuments/ns:WorkDocument"/>
+<xs:field xpath="ns:CustomerID"/>
+</xs:keyref>
+<xs:keyref name="WorkDocumentDocumentProductCodeConstraint" refer="ProductCodeConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:WorkingDocuments/ns:WorkDocument/ns:Line"/>
+<xs:field xpath="ns:ProductCode"/>
+</xs:keyref>
+<xs:unique name="PaymentPaymentRefNoConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:Payments/ns:Payment"/>
+<xs:field xpath="ns:PaymentRefNo"/>
+</xs:unique>
+<xs:keyref name="PaymentPaymentRefNoCustomerIDConstraint" refer="CustomerIDConstraint">
+<xs:selector xpath="ns:SourceDocuments/ns:Payments/ns:Payment"/>
+<xs:field xpath="ns:CustomerID"/>
+</xs:keyref>
+</xs:element>
+<!-- Estrutura de cabecalho (AuditFile.Header) -->
+<xs:element name="Header">
+<xs:complexType>
+<xs:sequence>
+<xs:element ref="AuditFileVersion"/>
+<xs:element ref="CompanyID"/>
+<xs:element name="TaxRegistrationNumber" type="SAFPTPortugueseVatNumber"/>
+<xs:element ref="TaxAccountingBasis"/>
+<xs:element ref="CompanyName"/>
+<xs:element ref="BusinessName" minOccurs="0"/>
+<xs:element ref="CompanyAddress"/>
+<xs:element ref="FiscalYear"/>
+<xs:element ref="StartDate"/>
+<xs:element ref="EndDate"/>
+<xs:element name="CurrencyCode" type="CurrencyPT"/>
+<xs:element ref="DateCreated"/>
+<xs:element ref="TaxEntity"/>
+<xs:element ref="ProductCompanyTaxID"/>
+<xs:element ref="SoftwareCertificateNumber"/>
+<xs:element ref="ProductID"/>
+<xs:element ref="ProductVersion"/>
+<xs:element ref="HeaderComment" minOccurs="0"/>
+<xs:element ref="Telephone" minOccurs="0"/>
+<xs:element ref="Fax" minOccurs="0"/>
+<xs:element ref="Email" minOccurs="0"/>
+<xs:element ref="Website" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<!-- Ficheiros Mestre (AuditFile.MasterFiles) -->
+<!--
+    Estrutura do Plano de Contas (AuditFile.MasterFiles.GeneralLedgerAccounts)
+-->
+<xs:element name="GeneralLedgerAccounts">
+<xs:complexType>
+<xs:sequence>
+<xs:element ref="TaxonomyReference"/>
+<xs:element name="Account">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="AccountID" type="SAFPTGLAccountID"/>
+<xs:element ref="AccountDescription"/>
+<xs:element ref="OpeningDebitBalance"/>
+<xs:element ref="OpeningCreditBalance"/>
+<xs:element ref="ClosingDebitBalance"/>
+<xs:element ref="ClosingCreditBalance"/>
+<xs:element ref="GroupingCategory"/>
+<xs:element name="GroupingCode" type="SAFPTGLAccountID" minOccurs="0"/>
+<xs:element name="TaxonomyCode" type="SAFPTTaxonomyCode" minOccurs="0"/>
+</xs:sequence>

@@ -43,7 +43,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_invoice_numbering.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -120,7 +120,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_payment_terms.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -183,7 +183,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_credit_debit_balance.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -251,7 +251,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_document_status.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -314,7 +314,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_quantity_unit_price.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -400,7 +400,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_tax_calculation_accuracy.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -510,7 +510,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_business_rules.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try

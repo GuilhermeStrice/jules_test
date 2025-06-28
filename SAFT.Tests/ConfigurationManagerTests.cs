@@ -21,6 +21,9 @@ namespace SAFT.Tests
         [Fact]
         public void TestConfigurationManager_OverrideAndSave()
         {
+            // Ensure clean state before test
+            ConfigurationManager.Load();
+            if (File.Exists("testconfig.json")) File.Delete("testconfig.json");
             var customConfig = new SAFTConfiguration
             {
                 SchemaPath = "custom.xsd",
@@ -31,9 +34,16 @@ namespace SAFT.Tests
             ConfigurationManager.Save("testconfig.json");
             Assert.True(File.Exists("testconfig.json"));
             var json = File.ReadAllText("testconfig.json");
+            
+            // Debug output
+            Console.WriteLine($"[DEBUG] Generated JSON: {json}");
+            
             Assert.Contains("custom.xsd", json);
             Assert.Contains("custom_output", json);
+            Assert.Contains("ES", json);
             File.Delete("testconfig.json");
+            // Reset config to default after test
+            ConfigurationManager.Load();
         }
     }
 } 

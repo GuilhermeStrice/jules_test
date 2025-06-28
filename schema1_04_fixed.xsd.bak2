@@ -22,9 +22,9 @@
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="GeneralLedgerAccounts" minOccurs="0"/>
-<xs:element ref="Customer" minOccurs="0"/>
-<xs:element ref="Supplier" minOccurs="0"/>
-<xs:element ref="Product" minOccurs="0"/>
+<xs:element ref="Customer" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element ref="Supplier" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element ref="Product" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="TaxTable" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
@@ -164,7 +164,7 @@
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="TaxonomyReference"/>
-<xs:element name="Account">
+<xs:element name="Account" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element name="AccountID" type="SAFPTGLAccountID"/>
@@ -194,7 +194,7 @@
 <xs:element ref="CompanyName"/>
 <xs:element ref="Contact" minOccurs="0"/>
 <xs:element name="BillingAddress" type="CustomerAddressStructure"/>
-<xs:element ref="ShipToAddress" minOccurs="0"/>
+<xs:element ref="ShipToAddress" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="Telephone" minOccurs="0"/>
 <xs:element ref="Fax" minOccurs="0"/>
 <xs:element ref="Email" minOccurs="0"/>
@@ -215,7 +215,7 @@
 <xs:element ref="CompanyName"/>
 <xs:element ref="Contact" minOccurs="0"/>
 <xs:element name="BillingAddress" type="AddressStructure"/>
-<xs:element name="ShipFromAddress" type="AddressStructure" minOccurs="0"/>
+<xs:element name="ShipFromAddress" type="AddressStructure" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="Telephone" minOccurs="0"/>
 <xs:element ref="Fax" minOccurs="0"/>
 <xs:element ref="Email" minOccurs="0"/>
@@ -245,7 +245,7 @@
 <xs:element name="TaxTable">
 <xs:complexType>
 <xs:sequence>
-<xs:element ref="TaxTableEntry" minOccurs="1"/>
+<xs:element ref="TaxTableEntry" minOccurs="1" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
 </xs:element>
@@ -274,12 +274,12 @@
 <xs:element ref="NumberOfEntries"/>
 <xs:element ref="TotalDebit"/>
 <xs:element ref="TotalCredit"/>
-<xs:element name="Journal" minOccurs="0">
+<xs:element name="Journal" minOccurs="0" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="JournalID"/>
 <xs:element ref="Description"/>
-<xs:element name="Transaction" minOccurs="0">
+<xs:element name="Transaction" minOccurs="0" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="TransactionID"/>
@@ -297,7 +297,7 @@
 <xs:element name="Lines">
 <xs:complexType>
 <xs:all>
-<xs:element name="DebitLine">
+<xs:element name="DebitLine" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="RecordID"/>
@@ -309,7 +309,7 @@
 </xs:sequence>
 </xs:complexType>
 </xs:element>
-<xs:element name="CreditLine">
+<xs:element name="CreditLine" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="RecordID"/>
@@ -345,7 +345,7 @@
 <xs:element ref="NumberOfEntries"/>
 <xs:element ref="TotalDebit"/>
 <xs:element ref="TotalCredit"/>
-<xs:element name="Invoice" minOccurs="0">
+<xs:element name="Invoice" minOccurs="0" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="InvoiceNo"/>
@@ -377,11 +377,11 @@
 <xs:element ref="ShipFrom" minOccurs="0" maxOccurs="1"/>
 <xs:element ref="MovementEndTime" minOccurs="0" maxOccurs="1"/>
 <xs:element ref="MovementStartTime" minOccurs="0" maxOccurs="1"/>
-<xs:element name="Line">
+<xs:element name="Line" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="LineNumber"/>
-<xs:element name="OrderReferences" type="OrderReferences" minOccurs="0"/>
+<xs:element name="OrderReferences" type="OrderReferences" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="ProductCode"/>
 <xs:element ref="ProductDescription"/>
 <xs:element ref="Quantity"/>
@@ -389,7 +389,7 @@
 <xs:element ref="UnitPrice"/>
 <xs:element ref="TaxBase" minOccurs="0"/>
 <xs:element ref="TaxPointDate"/>
-<xs:element name="References" type="References" minOccurs="0"/>
+<xs:element name="References" type="References" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="Description"/>
 <xs:element name="ProductSerialNumber" type="ProductSerialNumber" minOccurs="0"/>
 <xs:choice>
@@ -414,12 +414,12 @@
 <!--
  A estrutura Settlement representa acordos ou formas de pagamento futuros. Nao constitui em caso algum o somatorio dos descontos concedidos e reflectidos nas linhas dos documentos e a informacao aqui constante nao influi o montante total do documento (GrossTotal) 
 -->
-<xs:element name="Settlement" type="Settlement" minOccurs="0"/>
-<xs:element name="Payment" type="PaymentMethod" minOccurs="0"/>
+<xs:element name="Settlement" type="Settlement" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="Payment" type="PaymentMethod" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
 </xs:element>
-<xs:element name="WithholdingTax" type="WithholdingTax" minOccurs="0"/>
+<xs:element name="WithholdingTax" type="WithholdingTax" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
 </xs:element>
@@ -431,7 +431,7 @@
 <xs:sequence>
 <xs:element ref="NumberOfMovementLines"/>
 <xs:element ref="TotalQuantityIssued"/>
-<xs:element name="StockMovement" minOccurs="0">
+<xs:element name="StockMovement" minOccurs="0" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="DocumentNumber"/>
@@ -470,11 +470,11 @@
  Nos documentos resumo (MovementStatus "R"), na falta desta informacao em concreto, a hora de inicio de transporte (MovementStartTime) pode ser indicada com a concatenacao da data constante no campo MovementDate com a hora 00:00:00
 -->
 <xs:element ref="ATDocCodeID" minOccurs="0" maxOccurs="1"/>
-<xs:element name="Line">
+<xs:element name="Line" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="LineNumber"/>
-<xs:element name="OrderReferences" type="OrderReferences" minOccurs="0"/>
+<xs:element name="OrderReferences" type="OrderReferences" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="ProductCode"/>
 <xs:element ref="ProductDescription"/>
 <xs:element ref="Quantity"/>
@@ -516,7 +516,7 @@
 <xs:element ref="NumberOfEntries"/>
 <xs:element ref="TotalDebit"/>
 <xs:element ref="TotalCredit"/>
-<xs:element name="WorkDocument" minOccurs="0">
+<xs:element name="WorkDocument" minOccurs="0" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="DocumentNumber"/>
@@ -542,11 +542,11 @@
 <xs:element ref="SystemEntryDate"/>
 <xs:element ref="TransactionID" minOccurs="0"/>
 <xs:element ref="CustomerID"/>
-<xs:element name="Line">
+<xs:element name="Line" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="LineNumber"/>
-<xs:element name="OrderReferences" type="OrderReferences" minOccurs="0"/>
+<xs:element name="OrderReferences" type="OrderReferences" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="ProductCode"/>
 <xs:element ref="ProductDescription"/>
 <xs:element ref="Quantity"/>
@@ -554,7 +554,7 @@
 <xs:element ref="UnitPrice"/>
 <xs:element ref="TaxBase" minOccurs="0"/>
 <xs:element ref="TaxPointDate"/>
-<xs:element name="References" type="References" minOccurs="0"/>
+<xs:element name="References" type="References" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="Description"/>
 <xs:element name="ProductSerialNumber" type="ProductSerialNumber" minOccurs="0"/>
 <xs:choice>
@@ -591,7 +591,7 @@
 <xs:element ref="NumberOfEntries"/>
 <xs:element ref="TotalDebit"/>
 <xs:element ref="TotalCredit"/>
-<xs:element name="Payment" minOccurs="0">
+<xs:element name="Payment" minOccurs="0" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="PaymentRefNo"/>
@@ -613,15 +613,15 @@
 </xs:sequence>
 </xs:complexType>
 </xs:element>
-<xs:element name="PaymentMethod" type="PaymentMethod" minOccurs="0"/>
+<xs:element name="PaymentMethod" type="PaymentMethod" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="SourceID"/>
 <xs:element ref="SystemEntryDate"/>
 <xs:element ref="CustomerID"/>
-<xs:element name="Line">
+<xs:element name="Line" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="LineNumber"/>
-<xs:element name="SourceDocumentID">
+<xs:element name="SourceDocumentID" maxOccurs="unbounded">
 <xs:complexType>
 <xs:sequence>
 <xs:element ref="OriginatingON"/>
@@ -661,7 +661,7 @@
 </xs:sequence>
 </xs:complexType>
 </xs:element>
-<xs:element name="WithholdingTax" type="WithholdingTax" minOccurs="0"/>
+<xs:element name="WithholdingTax" type="WithholdingTax" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
 </xs:element>
@@ -710,14 +710,14 @@
 <!-- Estrutura de caraterizacao aduaneira de produtos-->
 <xs:complexType name="CustomsDetails">
 <xs:sequence>
-<xs:element ref="CNCode" minOccurs="0"/>
-<xs:element ref="UNNumber" minOccurs="0"/>
+<xs:element ref="CNCode" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element ref="UNNumber" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
 <!-- Estrutura de informacao aduaneira-->
 <xs:complexType name="CustomsInformation">
 <xs:sequence>
-<xs:element ref="ARCNo" minOccurs="0"/>
+<xs:element ref="ARCNo" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="IECAmount" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
@@ -762,7 +762,7 @@
 <!-- Estrutura de numero de serie do produto-->
 <xs:complexType name="ProductSerialNumber">
 <xs:sequence>
-<xs:element ref="SerialNumber"/>
+<xs:element ref="SerialNumber" maxOccurs="unbounded"/>
 </xs:sequence>
 </xs:complexType>
 <!--
@@ -786,9 +786,9 @@
 <!-- Estrutura de entregas de produtos -->
 <xs:complexType name="ShippingPointStructure">
 <xs:sequence>
-<xs:element ref="DeliveryID" minOccurs="0"/>
+<xs:element ref="DeliveryID" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element ref="DeliveryDate" minOccurs="0"/>
-<xs:sequence minOccurs="0">
+<xs:sequence minOccurs="0" maxOccurs="unbounded">
 <xs:element ref="WarehouseID" minOccurs="0"/>
 <xs:element ref="LocationID" minOccurs="0"/>
 </xs:sequence>

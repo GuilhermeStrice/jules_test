@@ -69,7 +69,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_customer_reference.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -196,7 +196,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_product_reference.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -346,7 +346,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_tax_code_reference.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -510,7 +510,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_account_reference.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -626,7 +626,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_document_totals.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
@@ -730,7 +730,7 @@ namespace SAFT.Tests
     </xs:element>
 </xs:schema>";
             
-            var schemaPath = "test_date_range.xsd";
+            var schemaPath = Path.GetTempFileName() + ".xsd";
             File.WriteAllText(schemaPath, schema);
             
             try
