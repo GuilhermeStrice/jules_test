@@ -24,10 +24,20 @@ namespace SAFT.Demo
                 Console.WriteLine($"Fiscal Year: {auditFile.Header.FiscalYear}");
                 Console.WriteLine($"Customers: {auditFile.MasterFiles.Customers.Count}");
                 Console.WriteLine($"Products: {auditFile.MasterFiles.Products.Count}");
+                Console.WriteLine($"General Ledger Accounts: {auditFile.MasterFiles.GeneralLedgerAccounts?.Accounts.Count ?? 0}");
                 Console.WriteLine($"Invoices: {auditFile.SourceDocuments?.SalesInvoices?.Invoices?.Count ?? 0}\n");
 
                 // Generate XML
                 Console.WriteLine("Generating SAF-T XML file...");
+                
+                // Debug: Check GeneralLedgerAccounts before serialization
+                Console.WriteLine($"[DEBUG] GeneralLedgerAccounts is null: {auditFile.MasterFiles.GeneralLedgerAccounts == null}");
+                if (auditFile.MasterFiles.GeneralLedgerAccounts != null)
+                {
+                    Console.WriteLine($"[DEBUG] GeneralLedgerAccounts.Accounts.Count: {auditFile.MasterFiles.GeneralLedgerAccounts.Accounts.Count}");
+                    Console.WriteLine($"[DEBUG] GeneralLedgerAccounts.TaxonomyReference: {auditFile.MasterFiles.GeneralLedgerAccounts.TaxonomyReference}");
+                }
+                
                 auditFile.SaveToOutputDirectory("demo_saft.xml");
                 Console.WriteLine("✓ SAF-T file generated: demo_saft.xml\n");
 
@@ -156,6 +166,55 @@ namespace SAFT.Demo
                         TaxCode = MovementTaxCode.RED.ToString(),
                         Description = "Reduced VAT Rate",
                         TaxPercentage = 6.00m
+                    }
+                }
+            };
+
+            // Add general ledger accounts
+            auditFile.MasterFiles.GeneralLedgerAccounts = new GeneralLedgerAccounts
+            {
+                TaxonomyReference = TaxonomyReference.S,
+                Accounts = new List<Account>
+                {
+                    new Account
+                    {
+                        AccountID = new GLAccountID { Value = "1101" },
+                        AccountDescription = "Accounts Receivable - Customer 1",
+                        OpeningDebitBalance = 0.00m,
+                        OpeningCreditBalance = 0.00m,
+                        ClosingDebitBalance = 123.00m,
+                        ClosingCreditBalance = 0.00m,
+                        GroupingCategory = GroupingCategory.GM
+                    },
+                    new Account
+                    {
+                        AccountID = new GLAccountID { Value = "1102" },
+                        AccountDescription = "Accounts Receivable - Customer 2",
+                        OpeningDebitBalance = 0.00m,
+                        OpeningCreditBalance = 0.00m,
+                        ClosingDebitBalance = 0.00m,
+                        ClosingCreditBalance = 0.00m,
+                        GroupingCategory = GroupingCategory.GM
+                    },
+                    new Account
+                    {
+                        AccountID = new GLAccountID { Value = "4101" },
+                        AccountDescription = "Sales Revenue",
+                        OpeningDebitBalance = 0.00m,
+                        OpeningCreditBalance = 0.00m,
+                        ClosingDebitBalance = 0.00m,
+                        ClosingCreditBalance = 100.00m,
+                        GroupingCategory = GroupingCategory.GM
+                    },
+                    new Account
+                    {
+                        AccountID = new GLAccountID { Value = "2432" },
+                        AccountDescription = "VAT Payable",
+                        OpeningDebitBalance = 0.00m,
+                        OpeningCreditBalance = 0.00m,
+                        ClosingDebitBalance = 0.00m,
+                        ClosingCreditBalance = 23.00m,
+                        GroupingCategory = GroupingCategory.GM
                     }
                 }
             };

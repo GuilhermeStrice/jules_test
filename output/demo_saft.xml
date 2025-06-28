@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<AuditFile xmlns="urn:OECD:StandardAuditFile-Tax:PT_1.04_01">
+  <Header>
+    <AuditFileVersion>1.04_01</AuditFileVersion>
+    <CompanyID />
+    <TaxRegistrationNumber>123456789</TaxRegistrationNumber>
+    <TaxAccountingBasis>C</TaxAccountingBasis>
+    <CompanyName>Demo Company Ltd</CompanyName>
+    <BusinessName>Demo Business</BusinessName>
+    <CompanyAddress>
+      <AddressDetail>123 Business Street</AddressDetail>
+      <City>Lisbon</City>
+      <PostalCode>1000-001</PostalCode>
+      <Country>PT</Country>
+    </CompanyAddress>
+    <FiscalYear>2024</FiscalYear>
+    <StartDate>2024-01-01</StartDate>
+    <EndDate>2024-12-31</EndDate>
+    <CurrencyCode>EUR</CurrencyCode>
+    <DateCreated>2025-06-28</DateCreated>
+    <TaxEntity />
+    <ProductCompanyTaxID />
+    <SoftwareCertificateNumber />
+    <ProductID>SAFT Demo</ProductID>
+    <ProductVersion>1.0.0</ProductVersion>
+  </Header>
+  <MasterFiles>
+    <GeneralLedgerAccounts>
+      <TaxonomyReference>S</TaxonomyReference>
+      <Account>
+        <AccountID>1101</AccountID>
+        <AccountDescription>Accounts Receivable - Customer 1</AccountDescription>
+        <OpeningDebitBalance>0.00</OpeningDebitBalance>
+        <OpeningCreditBalance>0.00</OpeningCreditBalance>
+        <ClosingDebitBalance>123.00</ClosingDebitBalance>
+        <ClosingCreditBalance>0.00</ClosingCreditBalance>
+        <GroupingCategory>GM</GroupingCategory>
+      </Account>
+      <Account>
+        <AccountID>1102</AccountID>
+        <AccountDescription>Accounts Receivable - Customer 2</AccountDescription>
+        <OpeningDebitBalance>0.00</OpeningDebitBalance>
+        <OpeningCreditBalance>0.00</OpeningCreditBalance>
+        <ClosingDebitBalance>0.00</ClosingDebitBalance>
+        <ClosingCreditBalance>0.00</ClosingCreditBalance>
+        <GroupingCategory>GM</GroupingCategory>
+      </Account>
+      <Account>
+        <AccountID>4101</AccountID>
+        <AccountDescription>Sales Revenue</AccountDescription>
+        <OpeningDebitBalance>0.00</OpeningDebitBalance>
+        <OpeningCreditBalance>0.00</OpeningCreditBalance>
+        <ClosingDebitBalance>0.00</ClosingDebitBalance>
+        <ClosingCreditBalance>100.00</ClosingCreditBalance>
+        <GroupingCategory>GM</GroupingCategory>
+      </Account>
+      <Account>
+        <AccountID>2432</AccountID>
+        <AccountDescription>VAT Payable</AccountDescription>
+        <OpeningDebitBalance>0.00</OpeningDebitBalance>
+        <OpeningCreditBalance>0.00</OpeningCreditBalance>
+        <ClosingDebitBalance>0.00</ClosingDebitBalance>
+        <ClosingCreditBalance>23.00</ClosingCreditBalance>
+        <GroupingCategory>GM</GroupingCategory>
+      </Account>
+    </GeneralLedgerAccounts>
+    <Customer>
+      <CustomerID>CUST001</CustomerID>
+      <AccountID>1101</AccountID>
+      <CustomerTaxID>123456789</CustomerTaxID>
+      <CompanyName>John Doe</CompanyName>
+      <BillingAddress>
+        <AddressDetail>456 Customer Ave</AddressDetail>
+        <City>Porto</City>
+        <PostalCode>4000-001</PostalCode>
+        <Country>PT</Country>
+      </BillingAddress>
+      <SelfBillingIndicator>0</SelfBillingIndicator>
+    </Customer>
+    <Customer>
+      <CustomerID>CUST002</CustomerID>
+      <AccountID>1102</AccountID>
+      <CustomerTaxID>987654321</CustomerTaxID>
+      <CompanyName>Jane Smith</CompanyName>
+      <BillingAddress>
+        <AddressDetail>789 Client Blvd</AddressDetail>
+        <City>Coimbra</City>
+        <PostalCode>3000-001</PostalCode>
+        <Country>PT</Country>
+      </BillingAddress>
+      <SelfBillingIndicator>0</SelfBillingIndicator>
+    </Customer>
+    <Product>
+      <ProductType>P</ProductType>
+      <ProductCode>PROD001</ProductCode>
+      <ProductDescription>Software License</ProductDescription>
+      <ProductNumberCode>SW001</ProductNumberCode>
+    </Product>
+    <Product>
+      <ProductType>S</ProductType>
+      <ProductCode>PROD002</ProductCode>
+      <ProductDescription>Consulting Service</ProductDescription>
+      <ProductNumberCode>CS001</ProductNumberCode>
+    </Product>
+    <TaxTable>
+      <TaxTableEntry>
+        <TaxType>IVA</TaxType>
+        <TaxCountryRegion>PT</TaxCountryRegion>
+        <TaxCode>NOR</TaxCode>
+        <Description>Normal VAT Rate</Description>
+        <TaxPercentage>23.00</TaxPercentage>
+      </TaxTableEntry>
+      <TaxTableEntry>
+        <TaxType>IVA</TaxType>
+        <TaxCountryRegion>PT</TaxCountryRegion>
+        <TaxCode>RED</TaxCode>
+        <Description>Reduced VAT Rate</Description>
+        <TaxPercentage>6.00</TaxPercentage>
+      </TaxTableEntry>
+    </TaxTable>
+  </MasterFiles>
+  <GeneralLedgerEntries>
+    <NumberOfEntries>0</NumberOfEntries>
+    <TotalDebit>0</TotalDebit>
+    <TotalCredit>0</TotalCredit>
+  </GeneralLedgerEntries>
+  <SourceDocuments>
+    <SalesInvoices>
+      <NumberOfEntries>0</NumberOfEntries>
+      <TotalDebit>0</TotalDebit>
+      <TotalCredit>0</TotalCredit>
+      <Invoice>
+        <InvoiceNo>FT 2024/001</InvoiceNo>
+        <ATCUD />
+        <DocumentStatus>
+          <InvoiceStatus>N</InvoiceStatus>
+          <InvoiceStatusDate>2024-01-15</InvoiceStatusDate>
+          <SourceID>system</SourceID>
+          <SourceBilling>P</SourceBilling>
+        </DocumentStatus>
+        <Hash />
+        <HashControl />
+        <InvoiceDate>2024-01-15</InvoiceDate>
+        <InvoiceType>FT</InvoiceType>
+        <SpecialRegimes>
+          <SelfBillingIndicator>0</SelfBillingIndicator>
+          <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
+          <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
+        </SpecialRegimes>
+        <SourceID />
+        <SystemEntryDate />
+        <CustomerID>CUST001</CustomerID>
+        <Line>
+          <LineNumber>1</LineNumber>
+          <ProductCode>PROD001</ProductCode>
+          <ProductDescription>Software License</ProductDescription>
+          <Quantity>1</Quantity>
+          <UnitOfMeasure>UN</UnitOfMeasure>
+          <UnitPrice>100.00</UnitPrice>
+          <TaxBase p6:nil="true" xmlns:p6="http://www.w3.org/2001/XMLSchema-instance" />
+          <TaxPointDate>2024-01-15</TaxPointDate>
+          <Description>Annual software license</Description>
+          <Tax>
+            <TaxType>IVA</TaxType>
+            <TaxCountryRegion>PT</TaxCountryRegion>
+            <TaxCode>NOR</TaxCode>
+            <TaxPercentage>23.00</TaxPercentage>
+            <TaxAmount>23.00</TaxAmount>
+          </Tax>
+          <SettlementAmount p6:nil="true" xmlns:p6="http://www.w3.org/2001/XMLSchema-instance" />
+        </Line>
+        <DocumentTotals>
+          <TaxPayable>23.00</TaxPayable>
+          <NetTotal>100.00</NetTotal>
+          <GrossTotal>123.00</GrossTotal>
+        </DocumentTotals>
+      </Invoice>
+    </SalesInvoices>
+  </SourceDocuments>
+</AuditFile>
