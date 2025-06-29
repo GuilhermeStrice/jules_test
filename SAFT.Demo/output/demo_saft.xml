@@ -2,14 +2,14 @@
 <AuditFile xmlns="urn:OECD:StandardAuditFile-Tax:PT_1.04_01">
   <Header>
     <AuditFileVersion>1.04_01</AuditFileVersion>
-    <CompanyID />
+    <CompanyID>123456789</CompanyID>
     <TaxRegistrationNumber>123456789</TaxRegistrationNumber>
-    <TaxAccountingBasis>C</TaxAccountingBasis>
-    <CompanyName>Demo Company Ltd</CompanyName>
-    <BusinessName>Demo Business</BusinessName>
+    <TaxAccountingBasis>F</TaxAccountingBasis>
+    <CompanyName>Sample Company Ltd.</CompanyName>
+    <BusinessName>Sample Business</BusinessName>
     <CompanyAddress>
-      <AddressDetail>123 Business Street</AddressDetail>
-      <City>Lisbon</City>
+      <AddressDetail>Sample Street 123</AddressDetail>
+      <City>Lisboa</City>
       <PostalCode>1000-001</PostalCode>
       <Country>PT</Country>
     </CompanyAddress>
@@ -17,51 +17,120 @@
     <StartDate>2024-01-01</StartDate>
     <EndDate>2024-12-31</EndDate>
     <CurrencyCode>EUR</CurrencyCode>
-    <DateCreated>2025-06-28</DateCreated>
-    <TaxEntity />
-    <ProductCompanyTaxID />
-    <SoftwareCertificateNumber />
+    <DateCreated>2025-06-30</DateCreated>
+    <TaxEntity>123456789</TaxEntity>
+    <ProductCompanyTaxID>123456789</ProductCompanyTaxID>
+    <SoftwareCertificateNumber>123456789</SoftwareCertificateNumber>
     <ProductID>SAFT Demo</ProductID>
-    <ProductVersion>1.0.0</ProductVersion>
+    <ProductVersion>1.0</ProductVersion>
+    <HeaderComment>Sample SAF-T file for demonstration</HeaderComment>
   </Header>
   <MasterFiles>
+    <GeneralLedgerAccounts>
+      <TaxonomyReference>S</TaxonomyReference>
+      <Account>
+        <AccountID>1101</AccountID>
+        <AccountDescription>Cash</AccountDescription>
+        <OpeningDebitBalance>10000.00</OpeningDebitBalance>
+        <OpeningCreditBalance>0.00</OpeningCreditBalance>
+        <ClosingDebitBalance>15000.00</ClosingDebitBalance>
+        <ClosingCreditBalance>0.00</ClosingCreditBalance>
+        <GroupingCategory>GM</GroupingCategory>
+        <GroupingCode>1101</GroupingCode>
+        <TaxonomyCode>1</TaxonomyCode>
+      </Account>
+      <Account>
+        <AccountID>1102</AccountID>
+        <AccountDescription>Bank Account</AccountDescription>
+        <OpeningDebitBalance>50000.00</OpeningDebitBalance>
+        <OpeningCreditBalance>0.00</OpeningCreditBalance>
+        <ClosingDebitBalance>75000.00</ClosingDebitBalance>
+        <ClosingCreditBalance>0.00</ClosingCreditBalance>
+        <GroupingCategory>GM</GroupingCategory>
+        <GroupingCode>1102</GroupingCode>
+        <TaxonomyCode>2</TaxonomyCode>
+      </Account>
+      <Account>
+        <AccountID>4101</AccountID>
+        <AccountDescription>Sales Revenue</AccountDescription>
+        <OpeningDebitBalance>0.00</OpeningDebitBalance>
+        <OpeningCreditBalance>100000.00</OpeningCreditBalance>
+        <ClosingDebitBalance>0.00</ClosingDebitBalance>
+        <ClosingCreditBalance>150000.00</ClosingCreditBalance>
+        <GroupingCategory>GM</GroupingCategory>
+        <GroupingCode>4101</GroupingCode>
+        <TaxonomyCode>3</TaxonomyCode>
+      </Account>
+      <Account>
+        <AccountID>2432</AccountID>
+        <AccountDescription>VAT Payable</AccountDescription>
+        <OpeningDebitBalance>0.00</OpeningDebitBalance>
+        <OpeningCreditBalance>23000.00</OpeningCreditBalance>
+        <ClosingDebitBalance>0.00</ClosingDebitBalance>
+        <ClosingCreditBalance>34500.00</ClosingCreditBalance>
+        <GroupingCategory>GM</GroupingCategory>
+        <GroupingCode>2432</GroupingCode>
+        <TaxonomyCode>4</TaxonomyCode>
+      </Account>
+    </GeneralLedgerAccounts>
     <Customer>
       <CustomerID>CUST001</CustomerID>
       <AccountID>1101</AccountID>
-      <CustomerTaxID>123456789</CustomerTaxID>
-      <CompanyName>John Doe</CompanyName>
+      <CustomerTaxID>987654321</CustomerTaxID>
+      <CompanyName>Customer Company Ltd.</CompanyName>
+      <Contact>John Doe</Contact>
       <BillingAddress>
-        <AddressDetail>456 Customer Ave</AddressDetail>
+        <AddressDetail>Customer Street 456</AddressDetail>
         <City>Porto</City>
         <PostalCode>4000-001</PostalCode>
         <Country>PT</Country>
       </BillingAddress>
+      <ShipToAddress>
+        <AddressDetail>Customer Street 456</AddressDetail>
+        <City>Porto</City>
+        <PostalCode>4000-001</PostalCode>
+        <Country>PT</Country>
+      </ShipToAddress>
+      <Telephone>123456789</Telephone>
+      <Fax>123456788</Fax>
+      <Email>customer@example.com</Email>
+      <Website>www.customer.com</Website>
       <SelfBillingIndicator>0</SelfBillingIndicator>
     </Customer>
-    <Customer>
-      <CustomerID>CUST002</CustomerID>
-      <AccountID>1102</AccountID>
-      <CustomerTaxID>987654321</CustomerTaxID>
-      <CompanyName>Jane Smith</CompanyName>
+    <Supplier>
+      <SupplierID>SUPP001</SupplierID>
+      <AccountID>1101</AccountID>
+      <SupplierTaxID>111222333</SupplierTaxID>
+      <CompanyName>Supplier Company Ltd.</CompanyName>
+      <Contact>Jane Smith</Contact>
       <BillingAddress>
-        <AddressDetail>789 Client Blvd</AddressDetail>
+        <AddressDetail>Supplier Street 789</AddressDetail>
         <City>Coimbra</City>
         <PostalCode>3000-001</PostalCode>
         <Country>PT</Country>
       </BillingAddress>
+      <ShipFromAddress>
+        <AddressDetail>Supplier Street 789</AddressDetail>
+        <City>Coimbra</City>
+        <PostalCode>3000-001</PostalCode>
+        <Country>PT</Country>
+      </ShipFromAddress>
+      <Telephone>987654321</Telephone>
+      <Fax>987654320</Fax>
+      <Email>supplier@example.com</Email>
+      <Website>www.supplier.com</Website>
       <SelfBillingIndicator>0</SelfBillingIndicator>
-    </Customer>
+    </Supplier>
     <Product>
       <ProductType>P</ProductType>
       <ProductCode>PROD001</ProductCode>
-      <ProductDescription>Software License</ProductDescription>
-      <ProductNumberCode>SW001</ProductNumberCode>
-    </Product>
-    <Product>
-      <ProductType>S</ProductType>
-      <ProductCode>PROD002</ProductCode>
-      <ProductDescription>Consulting Service</ProductDescription>
-      <ProductNumberCode>CS001</ProductNumberCode>
+      <ProductGroup>Electronics</ProductGroup>
+      <ProductDescription>Sample Product 1</ProductDescription>
+      <ProductNumberCode>1234567890123</ProductNumberCode>
+      <CustomsDetails>
+        <CNCode>12345678</CNCode>
+        <UNNumber>UN1234</UNNumber>
+      </CustomsDetails>
     </Product>
     <TaxTable>
       <TaxTableEntry>
@@ -70,6 +139,7 @@
         <TaxCode>NOR</TaxCode>
         <Description>Normal VAT Rate</Description>
         <TaxPercentage>23.00</TaxPercentage>
+        <TaxAmount>0.00</TaxAmount>
       </TaxTableEntry>
       <TaxTableEntry>
         <TaxType>IVA</TaxType>
@@ -77,56 +147,87 @@
         <TaxCode>RED</TaxCode>
         <Description>Reduced VAT Rate</Description>
         <TaxPercentage>6.00</TaxPercentage>
+        <TaxAmount>0.00</TaxAmount>
+      </TaxTableEntry>
+      <TaxTableEntry>
+        <TaxType>IVA</TaxType>
+        <TaxCountryRegion>PT</TaxCountryRegion>
+        <TaxCode>ISE</TaxCode>
+        <Description>Exempt VAT Rate</Description>
+        <TaxPercentage>0.00</TaxPercentage>
+        <TaxAmount>0.00</TaxAmount>
       </TaxTableEntry>
     </TaxTable>
   </MasterFiles>
-  <GeneralLedgerEntries>
-    <NumberOfEntries>0</NumberOfEntries>
-    <TotalDebit>0</TotalDebit>
-    <TotalCredit>0</TotalCredit>
-  </GeneralLedgerEntries>
   <SourceDocuments>
     <SalesInvoices>
-      <NumberOfEntries>0</NumberOfEntries>
-      <TotalDebit>0</TotalDebit>
-      <TotalCredit>0</TotalCredit>
+      <NumberOfEntries>1</NumberOfEntries>
+      <TotalDebit>123.00</TotalDebit>
+      <TotalCredit>123.00</TotalCredit>
       <Invoice>
         <InvoiceNo>FT 2024/001</InvoiceNo>
-        <ATCUD />
+        <ATCUD>20250630-00001</ATCUD>
         <DocumentStatus>
           <InvoiceStatus>N</InvoiceStatus>
-          <InvoiceStatusDate>2024-01-15</InvoiceStatusDate>
-          <SourceID>system</SourceID>
+          <InvoiceStatusDate>2025-06-30</InvoiceStatusDate>
+          <SourceID>SALES</SourceID>
           <SourceBilling>P</SourceBilling>
         </DocumentStatus>
-        <Hash />
-        <HashControl />
-        <InvoiceDate>2024-01-15</InvoiceDate>
+        <Hash>73a2b960969456900813417120b6a0adfda288d5bb6209de976b7d04f0507c47</Hash>
+        <HashControl>73a2b960969456900813417120b6a0adfda288d5bb6209de976b7d04f0507c47-FT FT 2024/001</HashControl>
+        <Period>2024</Period>
+        <InvoiceDate>2025-06-30</InvoiceDate>
         <InvoiceType>FT</InvoiceType>
         <SpecialRegimes>
           <SelfBillingIndicator>0</SelfBillingIndicator>
           <CashVATSchemeIndicator>0</CashVATSchemeIndicator>
           <ThirdPartiesBillingIndicator>0</ThirdPartiesBillingIndicator>
         </SpecialRegimes>
-        <SourceID />
-        <SystemEntryDate />
+        <SourceID>SALES</SourceID>
+        <EACCode />
+        <SystemEntryDate>2025-06-30</SystemEntryDate>
         <CustomerID>CUST001</CustomerID>
         <Line>
           <LineNumber>1</LineNumber>
           <ProductCode>PROD001</ProductCode>
-          <ProductDescription>Software License</ProductDescription>
-          <Quantity>1</Quantity>
+          <ProductDescription>Sample Product 1</ProductDescription>
+          <Quantity>1.00</Quantity>
           <UnitOfMeasure>UN</UnitOfMeasure>
           <UnitPrice>100.00</UnitPrice>
           <TaxBase p6:nil="true" xmlns:p6="http://www.w3.org/2001/XMLSchema-instance" />
-          <TaxPointDate>2024-01-15</TaxPointDate>
-          <Description>Annual software license</Description>
+          <TaxPointDate>2025-06-30</TaxPointDate>
+          <Description>Sample product line</Description>
+          <ProductSerialNumber />
+          <DebitAmount>0.00</DebitAmount>
+          <CreditAmount>100.00</CreditAmount>
           <Tax>
             <TaxType>IVA</TaxType>
             <TaxCountryRegion>PT</TaxCountryRegion>
             <TaxCode>NOR</TaxCode>
             <TaxPercentage>23.00</TaxPercentage>
             <TaxAmount>23.00</TaxAmount>
+          </Tax>
+          <SettlementAmount p6:nil="true" xmlns:p6="http://www.w3.org/2001/XMLSchema-instance" />
+        </Line>
+        <Line>
+          <LineNumber>2</LineNumber>
+          <ProductCode>PROD001</ProductCode>
+          <ProductDescription>Sample Product 1 (Exempt)</ProductDescription>
+          <Quantity>1.00</Quantity>
+          <UnitOfMeasure>UN</UnitOfMeasure>
+          <UnitPrice>50.00</UnitPrice>
+          <TaxBase p6:nil="true" xmlns:p6="http://www.w3.org/2001/XMLSchema-instance" />
+          <TaxPointDate>2025-06-30</TaxPointDate>
+          <Description>Sample exempt product line</Description>
+          <ProductSerialNumber />
+          <DebitAmount>0.00</DebitAmount>
+          <CreditAmount>50.00</CreditAmount>
+          <Tax>
+            <TaxType>IVA</TaxType>
+            <TaxCountryRegion>PT</TaxCountryRegion>
+            <TaxCode>ISE</TaxCode>
+            <TaxPercentage>0.00</TaxPercentage>
+            <TaxAmount>0.00</TaxAmount>
           </Tax>
           <SettlementAmount p6:nil="true" xmlns:p6="http://www.w3.org/2001/XMLSchema-instance" />
         </Line>

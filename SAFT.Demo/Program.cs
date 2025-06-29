@@ -5,6 +5,8 @@ using SAFT.Lib.Constants;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
+using System;
 
 namespace SAFT.Demo
 {
@@ -45,7 +47,8 @@ namespace SAFT.Demo
                 Console.WriteLine("Validating generated file using custom business logic validation...");
                 var outputPath = Path.Combine(ConfigurationManager.Current.OutputDirectory, "demo_saft.xml");
                 var xmlContent = File.ReadAllText(outputPath);
-                var validationResult = SchemaValidator.Validate(xmlContent, "schema1_04_fixed.xsd");
+                var schemaPath = Path.Combine("..", "schema1_04_fixed.xsd");
+                var validationResult = SchemaValidator.Validate(xmlContent, schemaPath);
                 
                 if (validationResult.Count == 0)
                 {
@@ -75,197 +78,294 @@ namespace SAFT.Demo
 
         static AuditFile CreateSampleAuditFile()
         {
-            var auditFile = AuditFile.CreateDefault();
-
-            // Configure header
-            auditFile.Header.CompanyName = "Demo Company Ltd";
-            auditFile.Header.BusinessName = "Demo Business";
-            auditFile.Header.TaxRegistrationNumber = new PortugueseVatNumber { Value = 123456789 };
-            auditFile.Header.FiscalYear = "2024";
-            auditFile.Header.StartDate = "2024-01-01";
-            auditFile.Header.EndDate = "2024-12-31";
-            auditFile.Header.CurrencyCode = CurrencyCodes.Euro;
-            auditFile.Header.DateCreated = DateTime.Now.ToString("yyyy-MM-dd");
-            auditFile.Header.ProductID = "SAFT Demo";
-            auditFile.Header.ProductVersion = "1.0.0";
-            auditFile.Header.CompanyAddress = new AddressStructure
+            var auditFile = new AuditFile
             {
-                AddressDetail = "123 Business Street",
-                City = "Lisbon",
-                PostalCode = "1000-001",
-                Country = CountryCodes.Portugal
-            };
-
-            // Add customers
-            auditFile.MasterFiles.Customers.Add(new Customer
-            {
-                CustomerID = "CUST001",
-                AccountID = new GLAccountID { Value = "1101" },
-                CustomerTaxID = "123456789",
-                CompanyName = "John Doe",
-                BillingAddress = new CustomerAddressStructure
+                Header = new Header
                 {
-                    AddressDetail = "456 Customer Ave",
-                    City = "Porto",
-                    PostalCode = "4000-001",
-                    Country = CountryCodes.Portugal
+                    AuditFileVersion = "1.04_01",
+                    CompanyID = "123456789", // Portuguese VAT number
+                    TaxRegistrationNumber = new PortugueseVatNumber { Value = 123456789 },
+                    TaxAccountingBasis = TaxAccountingBasis.F,
+                    CompanyName = "Sample Company Ltd.",
+                    BusinessName = "Sample Business",
+                    CompanyAddress = new AddressStructure
+                    {
+                        AddressDetail = "Sample Street 123",
+                        City = "Lisboa",
+                        PostalCode = "1000-001",
+                        Country = "PT"
+                    },
+                    FiscalYear = "2024",
+                    StartDate = "2024-01-01",
+                    EndDate = "2024-12-31",
+                    CurrencyCode = "EUR",
+                    DateCreated = DateTime.Now.ToString("yyyy-MM-dd"),
+                    TaxEntity = "123456789",
+                    ProductCompanyTaxID = "123456789",
+                    SoftwareCertificateNumber = "123456789",
+                    ProductID = "SAFT Demo",
+                    ProductVersion = "1.0",
+                    HeaderComment = "Sample SAF-T file for demonstration"
                 },
-                SelfBillingIndicator = 0
-            });
-
-            auditFile.MasterFiles.Customers.Add(new Customer
-            {
-                CustomerID = "CUST002",
-                AccountID = new GLAccountID { Value = "1102" },
-                CustomerTaxID = "987654321",
-                CompanyName = "Jane Smith",
-                BillingAddress = new CustomerAddressStructure
+                MasterFiles = new MasterFiles
                 {
-                    AddressDetail = "789 Client Blvd",
-                    City = "Coimbra",
-                    PostalCode = "3000-001",
-                    Country = CountryCodes.Portugal
-                },
-                SelfBillingIndicator = 0
-            });
-
-            // Add products
-            auditFile.MasterFiles.Products.Add(new Product
-            {
-                ProductCode = "PROD001",
-                ProductDescription = "Software License",
-                ProductNumberCode = "SW001",
-                ProductType = ProductType.P
-            });
-
-            auditFile.MasterFiles.Products.Add(new Product
-            {
-                ProductCode = "PROD002",
-                ProductDescription = "Consulting Service",
-                ProductNumberCode = "CS001",
-                ProductType = ProductType.S
-            });
-
-            // Add tax table
-            auditFile.MasterFiles.TaxTable = new TaxTable
-            {
-                TaxTableEntries = new List<TaxTableEntry>
-                {
-                    new TaxTableEntry
+                    GeneralLedgerAccounts = new GeneralLedgerAccounts
                     {
-                        TaxType = TaxType.IVA,
-                        TaxCountryRegion = CountryCodes.Portugal,
-                        TaxCode = MovementTaxCode.NOR.ToString(),
-                        Description = "Normal VAT Rate",
-                        TaxPercentage = 23.00m
-                    },
-                    new TaxTableEntry
-                    {
-                        TaxType = TaxType.IVA,
-                        TaxCountryRegion = CountryCodes.Portugal,
-                        TaxCode = MovementTaxCode.RED.ToString(),
-                        Description = "Reduced VAT Rate",
-                        TaxPercentage = 6.00m
-                    }
-                }
-            };
-
-            // Add general ledger accounts
-            auditFile.MasterFiles.GeneralLedgerAccounts = new GeneralLedgerAccounts
-            {
-                TaxonomyReference = TaxonomyReference.S,
-                Accounts = new List<Account>
-                {
-                    new Account
-                    {
-                        AccountID = new GLAccountID { Value = "1101" },
-                        AccountDescription = "Accounts Receivable - Customer 1",
-                        OpeningDebitBalance = 0.00m,
-                        OpeningCreditBalance = 0.00m,
-                        ClosingDebitBalance = 123.00m,
-                        ClosingCreditBalance = 0.00m,
-                        GroupingCategory = GroupingCategory.GM
-                    },
-                    new Account
-                    {
-                        AccountID = new GLAccountID { Value = "1102" },
-                        AccountDescription = "Accounts Receivable - Customer 2",
-                        OpeningDebitBalance = 0.00m,
-                        OpeningCreditBalance = 0.00m,
-                        ClosingDebitBalance = 0.00m,
-                        ClosingCreditBalance = 0.00m,
-                        GroupingCategory = GroupingCategory.GM
-                    },
-                    new Account
-                    {
-                        AccountID = new GLAccountID { Value = "4101" },
-                        AccountDescription = "Sales Revenue",
-                        OpeningDebitBalance = 0.00m,
-                        OpeningCreditBalance = 0.00m,
-                        ClosingDebitBalance = 0.00m,
-                        ClosingCreditBalance = 100.00m,
-                        GroupingCategory = GroupingCategory.GM
-                    },
-                    new Account
-                    {
-                        AccountID = new GLAccountID { Value = "2432" },
-                        AccountDescription = "VAT Payable",
-                        OpeningDebitBalance = 0.00m,
-                        OpeningCreditBalance = 0.00m,
-                        ClosingDebitBalance = 0.00m,
-                        ClosingCreditBalance = 23.00m,
-                        GroupingCategory = GroupingCategory.GM
-                    }
-                }
-            };
-
-            // Add sample invoice
-            auditFile.SourceDocuments = new SourceDocuments
-            {
-                SalesInvoices = new SalesInvoices
-                {
-                    Invoices = new List<Invoice>
-                    {
-                        new Invoice
+                        TaxonomyReference = TaxonomyReference.S,
+                        Accounts = new List<Account>
                         {
-                            InvoiceNo = "FT 2024/001",
-                            CustomerID = "CUST001",
-                            DocumentStatus = new DocumentStatus
+                            new Account
                             {
-                                InvoiceStatus = InvoiceStatus.N,
-                                InvoiceStatusDate = "2024-01-15",
-                                SourceID = "system",
-                                SourceBilling = SourceBilling.Produced
+                                AccountID = new GLAccountID { Value = "1101" },
+                                AccountDescription = "Cash",
+                                OpeningDebitBalance = 10000.00m,
+                                OpeningCreditBalance = 0.00m,
+                                ClosingDebitBalance = 15000.00m,
+                                ClosingCreditBalance = 0.00m,
+                                GroupingCategory = GroupingCategory.GM,
+                                GroupingCode = new GLAccountID { Value = "1101" },
+                                TaxonomyCode = new TaxonomyCode(1)
                             },
-                            InvoiceDate = "2024-01-15",
-                            InvoiceType = InvoiceType.FT,
-                            Lines = new List<InvoiceLine>
+                            new Account
                             {
-                                new InvoiceLine
+                                AccountID = new GLAccountID { Value = "1102" },
+                                AccountDescription = "Bank Account",
+                                OpeningDebitBalance = 50000.00m,
+                                OpeningCreditBalance = 0.00m,
+                                ClosingDebitBalance = 75000.00m,
+                                ClosingCreditBalance = 0.00m,
+                                GroupingCategory = GroupingCategory.GM,
+                                GroupingCode = new GLAccountID { Value = "1102" },
+                                TaxonomyCode = new TaxonomyCode(2)
+                            },
+                            new Account
+                            {
+                                AccountID = new GLAccountID { Value = "4101" },
+                                AccountDescription = "Sales Revenue",
+                                OpeningDebitBalance = 0.00m,
+                                OpeningCreditBalance = 100000.00m,
+                                ClosingDebitBalance = 0.00m,
+                                ClosingCreditBalance = 150000.00m,
+                                GroupingCategory = GroupingCategory.GM,
+                                GroupingCode = new GLAccountID { Value = "4101" },
+                                TaxonomyCode = new TaxonomyCode(3)
+                            },
+                            new Account
+                            {
+                                AccountID = new GLAccountID { Value = "2432" },
+                                AccountDescription = "VAT Payable",
+                                OpeningDebitBalance = 0.00m,
+                                OpeningCreditBalance = 23000.00m,
+                                ClosingDebitBalance = 0.00m,
+                                ClosingCreditBalance = 34500.00m,
+                                GroupingCategory = GroupingCategory.GM,
+                                GroupingCode = new GLAccountID { Value = "2432" },
+                                TaxonomyCode = new TaxonomyCode(4)
+                            }
+                        }
+                    },
+                    Customers = new List<Customer>
+                    {
+                        new Customer
+                        {
+                            CustomerID = "CUST001",
+                            AccountID = new GLAccountID { Value = "1101" },
+                            CustomerTaxID = "987654321",
+                            CompanyName = "Customer Company Ltd.",
+                            Contact = "John Doe",
+                            BillingAddress = new CustomerAddressStructure
+                            {
+                                AddressDetail = "Customer Street 456",
+                                City = "Porto",
+                                PostalCode = "4000-001",
+                                Country = "PT"
+                            },
+                            ShipToAddress = new List<CustomerAddressStructure>
+                            {
+                                new CustomerAddressStructure
                                 {
-                                    LineNumber = 1,
-                                    ProductCode = "PROD001",
-                                    ProductDescription = "Software License",
-                                    Quantity = 1,
-                                    UnitOfMeasure = "UN",
-                                    UnitPrice = 100.00m,
-                                    TaxPointDate = "2024-01-15",
-                                    Description = "Annual software license",
-                                    Tax = new Tax
-                                    {
-                                        TaxType = TaxType.IVA,
-                                        TaxCountryRegion = CountryCodes.Portugal,
-                                        TaxCode = MovementTaxCode.NOR.ToString(),
-                                        TaxPercentage = 23.00m,
-                                        TaxAmount = 23.00m
-                                    }
+                                    AddressDetail = "Customer Street 456",
+                                    City = "Porto",
+                                    PostalCode = "4000-001",
+                                    Country = "PT"
                                 }
                             },
-                            DocumentTotals = new DocumentTotals
+                            Telephone = "123456789",
+                            Fax = "123456788",
+                            Email = "customer@example.com",
+                            Website = "www.customer.com",
+                            SelfBillingIndicator = 0
+                        }
+                    },
+                    Suppliers = new List<Supplier>
+                    {
+                        new Supplier
+                        {
+                            SupplierID = "SUPP001",
+                            AccountID = new GLAccountID { Value = "1101" },
+                            SupplierTaxID = "111222333",
+                            CompanyName = "Supplier Company Ltd.",
+                            Contact = "Jane Smith",
+                            BillingAddress = new AddressStructure
                             {
-                                TaxPayable = 23.00m,
-                                NetTotal = 100.00m,
-                                GrossTotal = 123.00m
+                                AddressDetail = "Supplier Street 789",
+                                City = "Coimbra",
+                                PostalCode = "3000-001",
+                                Country = "PT"
+                            },
+                            ShipFromAddress = new List<AddressStructure>
+                            {
+                                new AddressStructure
+                                {
+                                    AddressDetail = "Supplier Street 789",
+                                    City = "Coimbra",
+                                    PostalCode = "3000-001",
+                                    Country = "PT"
+                                }
+                            },
+                            Telephone = "987654321",
+                            Fax = "987654320",
+                            Email = "supplier@example.com",
+                            Website = "www.supplier.com",
+                            SelfBillingIndicator = 0
+                        }
+                    },
+                    Products = new List<Product>
+                    {
+                        new Product
+                        {
+                            ProductType = ProductType.P,
+                            ProductCode = "PROD001",
+                            ProductGroup = "Electronics",
+                            ProductDescription = "Sample Product 1",
+                            ProductNumberCode = "1234567890123",
+                            CustomsDetails = new CustomsDetails
+                            {
+                                CNCode = new List<string> { "12345678" },
+                                UNNumber = new List<string> { "UN1234" }
+                            }
+                        }
+                    },
+                    TaxTable = new TaxTable
+                    {
+                        TaxTableEntries = new List<TaxTableEntry>
+                        {
+                            new TaxTableEntry
+                            {
+                                TaxType = TaxType.IVA,
+                                TaxCountryRegion = "PT",
+                                TaxCode = "NOR",
+                                Description = "Normal VAT Rate",
+                                TaxPercentage = 23.00m,
+                                TaxAmount = 0.00m
+                            },
+                            new TaxTableEntry
+                            {
+                                TaxType = TaxType.IVA,
+                                TaxCountryRegion = "PT",
+                                TaxCode = "RED",
+                                Description = "Reduced VAT Rate",
+                                TaxPercentage = 6.00m,
+                                TaxAmount = 0.00m
+                            },
+                            new TaxTableEntry
+                            {
+                                TaxType = TaxType.IVA,
+                                TaxCountryRegion = "PT",
+                                TaxCode = "ISE",
+                                Description = "Exempt VAT Rate",
+                                TaxPercentage = 0.00m,
+                                TaxAmount = 0.00m
+                            }
+                        }
+                    }
+                },
+                SourceDocuments = new SourceDocuments
+                {
+                    SalesInvoices = new SalesInvoices
+                    {
+                        NumberOfEntries = 1,
+                        TotalDebit = 123.00m,
+                        TotalCredit = 123.00m,
+                        Invoices = new List<Invoice>
+                        {
+                            new Invoice
+                            {
+                                InvoiceNo = "FT 2024/001",
+                                ATCUD = PortugueseUtils.GenerateATCUD(DateTime.Now, 1),
+                                DocumentStatus = new DocumentStatus
+                                {
+                                    InvoiceStatus = InvoiceStatus.N,
+                                    InvoiceStatusDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                                    SourceID = "SALES",
+                                    SourceBilling = SourceBilling.Produced
+                                },
+                                Hash = PortugueseUtils.GenerateDocumentHash("Sample invoice content"),
+                                HashControl = PortugueseUtils.GenerateHashControl(
+                                    PortugueseUtils.GenerateDocumentHash("Sample invoice content"), 
+                                    "FT", 
+                                    "FT 2024/001"
+                                ),
+                                Period = "2024",
+                                InvoiceDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                                InvoiceType = InvoiceType.FT,
+                                SourceID = "SALES",
+                                EACCode = "",
+                                SystemEntryDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                                CustomerID = "CUST001",
+                                Lines = new List<InvoiceLine>
+                                {
+                                    new InvoiceLine
+                                    {
+                                        LineNumber = 1,
+                                        ProductCode = "PROD001",
+                                        ProductDescription = "Sample Product 1",
+                                        Quantity = 1.00m,
+                                        UnitOfMeasure = "UN",
+                                        UnitPrice = 100.00m,
+                                        TaxPointDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                                        Description = "Sample product line",
+                                        ProductSerialNumber = new ProductSerialNumber(),
+                                        DebitAmount = 0.00m,
+                                        CreditAmount = 100.00m,
+                                        Tax = new Tax
+                                        {
+                                            TaxType = TaxType.IVA,
+                                            TaxCountryRegion = "PT",
+                                            TaxCode = "NOR",
+                                            TaxPercentage = 23.00m,
+                                            TaxAmount = 23.00m
+                                        }
+                                    },
+                                    new InvoiceLine
+                                    {
+                                        LineNumber = 2,
+                                        ProductCode = "PROD001",
+                                        ProductDescription = "Sample Product 1 (Exempt)",
+                                        Quantity = 1.00m,
+                                        UnitOfMeasure = "UN",
+                                        UnitPrice = 50.00m,
+                                        TaxPointDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                                        Description = "Sample exempt product line",
+                                        ProductSerialNumber = new ProductSerialNumber(),
+                                        DebitAmount = 0.00m,
+                                        CreditAmount = 50.00m,
+                                        Tax = new Tax
+                                        {
+                                            TaxType = TaxType.IVA,
+                                            TaxCountryRegion = "PT",
+                                            TaxCode = "ISE",
+                                            TaxPercentage = 0.00m,
+                                            TaxAmount = 0.00m
+                                        }
+                                    }
+                                },
+                                DocumentTotals = new DocumentTotals
+                                {
+                                    TaxPayable = 23.00m,
+                                    NetTotal = 100.00m,
+                                    GrossTotal = 123.00m
+                                }
                             }
                         }
                     }

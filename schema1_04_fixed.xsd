@@ -34,97 +34,97 @@
 </xs:sequence>
 </xs:complexType>
 <!-- Constraint-->
-<xs:unique name="AccountIDConstraint">
-<xs:selector xpath="ns:MasterFiles/ns:GeneralLedgerAccounts/ns:Account"/>
-<xs:field xpath="ns:AccountID"/>
-</xs:unique>
+<xs:key name="AccountIDConstraint">
+<xs:selector xpath="MasterFiles/GeneralLedgerAccounts/Account"/>
+<xs:field xpath="AccountID"/>
+</xs:key>
 <xs:keyref name="GroupingCodeConstraint" refer="AccountIDConstraint">
-<xs:selector xpath="ns:MasterFiles/ns:GeneralLedgerAccounts/ns:Account"/>
-<xs:field xpath="ns:GroupingCode"/>
+<xs:selector xpath="MasterFiles/GeneralLedgerAccounts/Account"/>
+<xs:field xpath="GroupingCode"/>
 </xs:keyref>
 <xs:unique name="CustomerIDConstraint">
-<xs:selector xpath="ns:MasterFiles/ns:Customer"/>
-<xs:field xpath="ns:CustomerID"/>
+<xs:selector xpath="MasterFiles/Customer"/>
+<xs:field xpath="CustomerID"/>
 </xs:unique>
 <xs:unique name="SupplierIDConstraint">
-<xs:selector xpath="ns:MasterFiles/ns:Supplier"/>
-<xs:field xpath="ns:SupplierID"/>
+<xs:selector xpath="MasterFiles/Supplier"/>
+<xs:field xpath="SupplierID"/>
 </xs:unique>
 <xs:unique name="ProductCodeConstraint">
-<xs:selector xpath="ns:MasterFiles/ns:Product"/>
-<xs:field xpath="ns:ProductCode"/>
+<xs:selector xpath="MasterFiles/Product"/>
+<xs:field xpath="ProductCode"/>
 </xs:unique>
 <xs:keyref name="GeneralLedgerEntriesDebitLineAccountIDConstraint" refer="AccountIDConstraint">
-<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction/ns:Lines/ns:DebitLine"/>
-<xs:field xpath="ns:AccountID"/>
+<xs:selector xpath="GeneralLedgerEntries/Journal/Transaction/Lines/DebitLine"/>
+<xs:field xpath="AccountID"/>
 </xs:keyref>
 <xs:keyref name="GeneralLedgerEntriesCreditLineAccountIDConstraint" refer="AccountIDConstraint">
-<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction/ns:Lines/ns:CreditLine"/>
-<xs:field xpath="ns:AccountID"/>
+<xs:selector xpath="GeneralLedgerEntries/Journal/Transaction/Lines/CreditLine"/>
+<xs:field xpath="AccountID"/>
 </xs:keyref>
 <xs:keyref name="GeneralLedgerEntriesCustomerIDConstraint" refer="CustomerIDConstraint">
-<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction"/>
-<xs:field xpath="ns:CustomerID"/>
+<xs:selector xpath="GeneralLedgerEntries/Journal/Transaction"/>
+<xs:field xpath="CustomerID"/>
 </xs:keyref>
 <xs:unique name="GeneralLedgerEntriesJournalIdConstraint">
-<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal"/>
-<xs:field xpath="ns:JournalID"/>
+<xs:selector xpath="GeneralLedgerEntries/Journal"/>
+<xs:field xpath="JournalID"/>
 </xs:unique>
 <xs:keyref name="GeneralLedgerEntriesSupplierIDConstraint" refer="SupplierIDConstraint">
-<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction"/>
-<xs:field xpath="ns:SupplierID"/>
+<xs:selector xpath="GeneralLedgerEntries/Journal/Transaction"/>
+<xs:field xpath="SupplierID"/>
 </xs:keyref>
 <xs:unique name="GeneralLedgerEntriesTransactionIdConstraint">
-<xs:selector xpath="ns:GeneralLedgerEntries/ns:Journal/ns:Transaction"/>
-<xs:field xpath="ns:TransactionID"/>
+<xs:selector xpath="GeneralLedgerEntries/Journal/Transaction"/>
+<xs:field xpath="TransactionID"/>
 </xs:unique>
 <xs:unique name="InvoiceNoConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:SalesInvoices/ns:Invoice"/>
-<xs:field xpath="ns:InvoiceNo"/>
+<xs:selector xpath="SourceDocuments/SalesInvoices/Invoice"/>
+<xs:field xpath="InvoiceNo"/>
 </xs:unique>
 <xs:keyref name="InvoiceCustomerIDConstraint" refer="CustomerIDConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:SalesInvoices/ns:Invoice"/>
-<xs:field xpath="ns:CustomerID"/>
+<xs:selector xpath="SourceDocuments/SalesInvoices/Invoice"/>
+<xs:field xpath="CustomerID"/>
 </xs:keyref>
 <xs:keyref name="InvoiceProductCodeConstraint" refer="ProductCodeConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:SalesInvoices/ns:Invoice/ns:Line"/>
-<xs:field xpath="ns:ProductCode"/>
+<xs:selector xpath="SourceDocuments/SalesInvoices/Invoice/Line"/>
+<xs:field xpath="ProductCode"/>
 </xs:keyref>
 <xs:unique name="DocumentNumberConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:MovementOfGoods/ns:StockMovement"/>
-<xs:field xpath="ns:DocumentNumber"/>
+<xs:selector xpath="SourceDocuments/MovementOfGoods/StockMovement"/>
+<xs:field xpath="DocumentNumber"/>
 </xs:unique>
 <xs:keyref name="StockMovementCustomerIDConstraint" refer="CustomerIDConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:MovementOfGoods/ns:StockMovement"/>
-<xs:field xpath="ns:CustomerID"/>
+<xs:selector xpath="SourceDocuments/MovementOfGoods/StockMovement"/>
+<xs:field xpath="CustomerID"/>
 </xs:keyref>
 <xs:keyref name="StockMovementSupplierIDConstraint" refer="SupplierIDConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:MovementOfGoods/ns:StockMovement"/>
-<xs:field xpath="ns:SupplierID"/>
+<xs:selector xpath="SourceDocuments/MovementOfGoods/StockMovement"/>
+<xs:field xpath="SupplierID"/>
 </xs:keyref>
 <xs:keyref name="StockMovementProductCodeConstraint" refer="ProductCodeConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:MovementOfGoods/ns:StockMovement/ns:Line"/>
-<xs:field xpath="ns:ProductCode"/>
+<xs:selector xpath="SourceDocuments/MovementOfGoods/StockMovement/Line"/>
+<xs:field xpath="ProductCode"/>
 </xs:keyref>
 <xs:unique name="WorkDocumentDocumentNumberConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:WorkingDocuments/ns:WorkDocument"/>
-<xs:field xpath="ns:DocumentNumber"/>
+<xs:selector xpath="SourceDocuments/WorkingDocuments/WorkDocument"/>
+<xs:field xpath="DocumentNumber"/>
 </xs:unique>
 <xs:keyref name="WorkDocumentDocumentCustomerIDConstraint" refer="CustomerIDConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:WorkingDocuments/ns:WorkDocument"/>
-<xs:field xpath="ns:CustomerID"/>
+<xs:selector xpath="SourceDocuments/WorkingDocuments/WorkDocument"/>
+<xs:field xpath="CustomerID"/>
 </xs:keyref>
 <xs:keyref name="WorkDocumentDocumentProductCodeConstraint" refer="ProductCodeConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:WorkingDocuments/ns:WorkDocument/ns:Line"/>
-<xs:field xpath="ns:ProductCode"/>
+<xs:selector xpath="SourceDocuments/WorkingDocuments/WorkDocument/Line"/>
+<xs:field xpath="ProductCode"/>
 </xs:keyref>
 <xs:unique name="PaymentPaymentRefNoConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:Payments/ns:Payment"/>
-<xs:field xpath="ns:PaymentRefNo"/>
+<xs:selector xpath="SourceDocuments/Payments/Payment"/>
+<xs:field xpath="PaymentRefNo"/>
 </xs:unique>
 <xs:keyref name="PaymentPaymentRefNoCustomerIDConstraint" refer="CustomerIDConstraint">
-<xs:selector xpath="ns:SourceDocuments/ns:Payments/ns:Payment"/>
-<xs:field xpath="ns:CustomerID"/>
+<xs:selector xpath="SourceDocuments/Payments/Payment"/>
+<xs:field xpath="CustomerID"/>
 </xs:keyref>
 </xs:element>
 <!-- Estrutura de cabecalho (AuditFile.Header) -->

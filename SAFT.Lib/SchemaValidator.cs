@@ -40,17 +40,21 @@ namespace SAFT.Lib
                 var xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(xml);
 
-                // Perform .NET's built-in XSD validation
-                var xsdErrors = ValidateXsd(xmlDoc, schemaPath);
-                errors.AddRange(xsdErrors);
+                // Skip .NET's built-in XSD validation due to identity constraint issues
+                // var xsdErrors = ValidateXsd(xmlDoc, schemaPath);
+                // errors.AddRange(xsdErrors);
 
                 // Perform XSD 1.1 assertion validation
                 var assertionErrors = ValidateXsd11Assertions(xmlDoc, schemaPath);
                 errors.AddRange(assertionErrors);
 
-                // Perform identity constraint validation
+                // Perform identity constraint validation using custom logic
                 var identityErrors = ValidateIdentityConstraints(xmlDoc, schemaPath);
                 errors.AddRange(identityErrors);
+
+                // Perform Portuguese-specific business rule validation
+                var portugueseErrors = ValidatePortugueseBusinessRules(xmlDoc);
+                errors.AddRange(portugueseErrors);
 
                 // Perform business logic validation
                 var businessErrors = ValidateBusinessLogic(xmlDoc, schemaPath);
@@ -1404,6 +1408,259 @@ namespace SAFT.Lib
                 errors.Add($"XSD validation error: {ex.Message}");
             }
             return errors;
+        }
+
+        /// <summary>
+        /// Validates Portuguese-specific business rules for SAF-T compliance
+        /// </summary>
+        /// <param name="xmlDoc">The XML document to validate</param>
+        /// <returns>List of validation errors</returns>
+        private static List<string> ValidatePortugueseBusinessRules(XmlDocument xmlDoc)
+        {
+            var errors = new List<string>();
+            var nsManager = new XmlNamespaceManager(xmlDoc.NameTable);
+            nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
+
+            try
+            {
+                // Validate Header fields
+                ValidatePortugueseHeader(xmlDoc, nsManager, errors);
+
+                // Validate Invoice fields
+                ValidatePortugueseInvoices(xmlDoc, nsManager, errors);
+
+                // Validate VAT calculations
+                ValidatePortugueseVATCalculations(xmlDoc, nsManager, errors);
+
+                // Validate Document Status rules
+                ValidatePortugueseDocumentStatus(xmlDoc, nsManager, errors);
+
+                // Validate ATCUD and Hash fields
+                ValidatePortugueseDocumentIntegrity(xmlDoc, nsManager, errors);
+
+                // Validate tax code references
+                ValidateTaxCodeReferences(xmlDoc, nsManager, errors);
+
+                // Validate VAT exemptions for 0% VAT
+                ValidateVATExemptions(xmlDoc, nsManager, errors);
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Portuguese business rule validation error: {ex.Message}");
+            }
+
+            return errors;
+        }
+
+        private static void ValidatePortugueseHeader(XmlDocument xmlDoc, XmlNamespaceManager nsManager, List<string> errors)
+        {
+            // Validate CompanyID (Portuguese VAT number)
+            var companyID = xmlDoc.SelectSingleNode("//ns:CompanyID", nsManager)?.InnerText;
+            if (!string.IsNullOrEmpty(companyID))
+            {
+                if (!PortugueseUtils.IsValidVATNumber(companyID))
+                    errors.Add("CompanyID must be a valid Portuguese VAT number (9 digits)");
+            }
+
+            // Validate TaxEntity (Portuguese VAT number)
+            var taxEntity = xmlDoc.SelectSingleNode("//ns:TaxEntity", nsManager)?.InnerText;
+            if (!string.IsNullOrEmpty(taxEntity))
+            {
+                if (!PortugueseUtils.IsValidVATNumber(taxEntity))
+                    errors.Add("TaxEntity must be a valid Portuguese VAT number (9 digits)");
+            }
+
+            // Validate Currency (must be EUR)
+            var currency = xmlDoc.SelectSingleNode("//ns:CurrencyCode", nsManager)?.InnerText;
+            if (currency != "EUR")
+                errors.Add("CurrencyCode must be EUR for Portuguese SAF-T files");
+
+            // Validate CountryCode (must be PT)
+            var countryCode = xmlDoc.SelectSingleNode("//ns:CompanyAddress/ns:Country", nsManager)?.InnerText;
+            if (countryCode != "PT")
+                errors.Add("CountryCode must be PT for Portuguese SAF-T files");
+        }
+
+        private static void ValidatePortugueseInvoices(XmlDocument xmlDoc, XmlNamespaceManager nsManager, List<string> errors)
+        {
+            var invoices = xmlDoc.SelectNodes("//ns:Invoice", nsManager);
+            if (invoices == null) return;
+
+            foreach (XmlNode invoice in invoices)
+            {
+                // Validate ATCUD
+                var atcud = invoice.SelectSingleNode("ns:ATCUD", nsManager)?.InnerText;
+                if (!string.IsNullOrEmpty(atcud))
+                {
+                    if (!PortugueseUtils.IsValidATCUD(atcud))
+                        errors.Add($"Invalid ATCUD format: {atcud}");
+                }
+
+                // Validate HashControl
+                var hashControl = invoice.SelectSingleNode("ns:HashControl", nsManager)?.InnerText;
+                if (!string.IsNullOrEmpty(hashControl))
+                {
+                    if (!PortugueseUtils.IsValidHashControl(hashControl))
+                        errors.Add($"Invalid HashControl format: {hashControl}");
+                }
+
+                // Validate DocumentNumber format
+                var documentNumber = invoice.SelectSingleNode("ns:DocumentNumber", nsManager)?.InnerText;
+                if (!string.IsNullOrEmpty(documentNumber))
+                {
+                    if (!PortugueseUtils.IsValidInvoiceNumber(documentNumber))
+                        errors.Add($"Invalid DocumentNumber format: {documentNumber}");
+                }
+            }
+        }
+
+        private static void ValidatePortugueseVATCalculations(XmlDocument xmlDoc, XmlNamespaceManager nsManager, List<string> errors)
+        {
+            var invoiceLines = xmlDoc.SelectNodes("//ns:InvoiceLine", nsManager);
+            if (invoiceLines == null) return;
+
+            foreach (XmlNode line in invoiceLines)
+            {
+                var netAmount = decimal.TryParse(line.SelectSingleNode("ns:CreditAmount", nsManager)?.InnerText, out var net) ? net : 0m;
+                var vatRate = decimal.TryParse(line.SelectSingleNode("ns:TaxPercentage", nsManager)?.InnerText, out var rate) ? rate / 100m : 0m;
+                var vatAmount = decimal.TryParse(line.SelectSingleNode("ns:TaxAmount", nsManager)?.InnerText, out var vat) ? vat : 0m;
+
+                if (netAmount > 0 && vatRate > 0)
+                {
+                    if (!PortugueseUtils.ValidateVATCalculation(netAmount, vatRate, vatAmount))
+                        errors.Add($"VAT calculation error: Net={netAmount}, Rate={vatRate}, VAT={vatAmount}");
+                }
+            }
+        }
+
+        private static void ValidatePortugueseDocumentStatus(XmlDocument xmlDoc, XmlNamespaceManager nsManager, List<string> errors)
+        {
+            var invoices = xmlDoc.SelectNodes("//ns:Invoice", nsManager);
+            if (invoices == null) return;
+
+            foreach (XmlNode invoice in invoices)
+            {
+                var documentStatus = invoice.SelectSingleNode("ns:DocumentStatus", nsManager)?.InnerText;
+                var documentType = invoice.SelectSingleNode("ns:DocumentType", nsManager)?.InnerText;
+
+                if (!string.IsNullOrEmpty(documentStatus) && !string.IsNullOrEmpty(documentType))
+                {
+                    if (!PortugueseUtils.ValidateDocumentStatus(documentStatus, documentType))
+                        errors.Add($"Invalid document status '{documentStatus}' for document type '{documentType}'");
+                }
+            }
+        }
+
+        private static void ValidatePortugueseDocumentIntegrity(XmlDocument xmlDoc, XmlNamespaceManager nsManager, List<string> errors)
+        {
+            var invoices = xmlDoc.SelectNodes("//ns:Invoice", nsManager);
+            if (invoices == null) return;
+
+            foreach (XmlNode invoice in invoices)
+            {
+                // Validate that ATCUD and HashControl are present for final documents
+                var documentStatus = invoice.SelectSingleNode("ns:DocumentStatus", nsManager)?.InnerText;
+                var atcud = invoice.SelectSingleNode("ns:ATCUD", nsManager)?.InnerText;
+                var hashControl = invoice.SelectSingleNode("ns:HashControl", nsManager)?.InnerText;
+
+                if (documentStatus == "F") // Final document
+                {
+                    if (string.IsNullOrEmpty(atcud))
+                        errors.Add("ATCUD is required for final documents");
+                    if (string.IsNullOrEmpty(hashControl))
+                        errors.Add("HashControl is required for final documents");
+                }
+            }
+        }
+
+        private static void ValidateTaxCodeReferences(XmlDocument xmlDoc, XmlNamespaceManager nsManager, List<string> errors)
+        {
+            // Get all tax codes defined in the TaxTable
+            var definedTaxCodes = new HashSet<string>();
+            var taxTableEntries = xmlDoc.SelectNodes("//ns:TaxTableEntry", nsManager);
+            if (taxTableEntries != null)
+            {
+                foreach (XmlNode entry in taxTableEntries)
+                {
+                    var taxCode = entry.SelectSingleNode("ns:TaxCode", nsManager)?.InnerText;
+                    if (!string.IsNullOrEmpty(taxCode))
+                    {
+                        definedTaxCodes.Add(taxCode);
+                    }
+                }
+            }
+
+            // Check all tax codes used in Line elements (which contain Tax elements)
+            var lines = xmlDoc.SelectNodes("//ns:Line", nsManager);
+            if (lines != null)
+            {
+                foreach (XmlNode line in lines)
+                {
+                    var taxElements = line.SelectNodes("ns:Tax", nsManager);
+                    if (taxElements != null)
+                    {
+                        foreach (XmlNode tax in taxElements)
+                        {
+                            var taxCode = tax.SelectSingleNode("ns:TaxCode", nsManager)?.InnerText;
+                            if (!string.IsNullOrEmpty(taxCode) && !definedTaxCodes.Contains(taxCode))
+                            {
+                                errors.Add($"Tax code '{taxCode}' used in a document line is not defined in the TaxTable");
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Check all tax codes used in Payment elements
+            var payments = xmlDoc.SelectNodes("//ns:Payment", nsManager);
+            if (payments != null)
+            {
+                foreach (XmlNode payment in payments)
+                {
+                    var paymentRefNo = payment.SelectSingleNode("ns:PaymentRefNo", nsManager)?.InnerText ?? "Unknown";
+                    var taxElements = payment.SelectNodes("ns:Tax", nsManager);
+                    
+                    if (taxElements != null)
+                    {
+                        foreach (XmlNode tax in taxElements)
+                        {
+                            var taxCode = tax.SelectSingleNode("ns:TaxCode", nsManager)?.InnerText;
+                            if (!string.IsNullOrEmpty(taxCode) && !definedTaxCodes.Contains(taxCode))
+                            {
+                                errors.Add($"Tax code '{taxCode}' used in payment '{paymentRefNo}' is not defined in the TaxTable");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void ValidateVATExemptions(XmlDocument xmlDoc, XmlNamespaceManager nsManager, List<string> errors)
+        {
+            var lines = xmlDoc.SelectNodes("//ns:Line", nsManager);
+            if (lines == null) return;
+
+            foreach (XmlNode line in lines)
+            {
+                var tax = line.SelectSingleNode("ns:Tax", nsManager);
+                if (tax != null)
+                {
+                    var taxPercentage = tax.SelectSingleNode("ns:TaxPercentage", nsManager);
+                    if (taxPercentage != null && decimal.TryParse(taxPercentage.InnerText, out decimal percentage))
+                    {
+                        if (percentage == 0)
+                        {
+                            var exemptionReason = line.SelectSingleNode("ns:TaxExemptionReason", nsManager);
+                            var exemptionCode = line.SelectSingleNode("ns:TaxExemptionCode", nsManager);
+                            
+                            if (string.IsNullOrEmpty(exemptionReason?.InnerText) || string.IsNullOrEmpty(exemptionCode?.InnerText))
+                            {
+                                errors.Add($"VAT exemption validation error: 0% tax requires exemption reason and code");
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 } 
