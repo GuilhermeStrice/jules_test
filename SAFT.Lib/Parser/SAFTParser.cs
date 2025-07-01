@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using System.Text;
 
 using SAFT.Lib.Utils;
+using SAFT.Lib.Validation;
 
 namespace SAFT.Lib.Parser
 {

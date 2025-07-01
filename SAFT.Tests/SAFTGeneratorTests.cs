@@ -1,6 +1,7 @@
 using Xunit;
 using SAFT.Lib;
 using System.IO;
+using SAFT.Lib.Validation;
 
 namespace SAFT.Tests
 {

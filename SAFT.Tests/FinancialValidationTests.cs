@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml;
 using System;
 using SAFT.Tests;
+using SAFT.Lib.Validation;
 
 namespace SAFT.Tests
 {

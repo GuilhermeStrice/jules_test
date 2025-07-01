@@ -9,7 +9,7 @@ using System.Xml.Schema;
 using System.Xml.XPath;
 using SAFT.Lib.Utils;
 
-namespace SAFT.Lib
+namespace SAFT.Lib.Validation
 {
     /// <summary>
     /// Provides utilities to validate a SAF-T XML string against the official XSD schema.
@@ -2753,32 +2753,6 @@ namespace SAFT.Lib
                     errors.Add($"DocArchivalNumber must not contain spaces, got '{value}'");
                 }
             }
-        }
-
-        /// <summary>
-        /// Validates the XML document against the schema only.
-        /// </summary>
-        /// <param name="xmlDoc">The XML document to validate.</param>
-        /// <param name="schemaPath">Path to the schema file.</param>
-        /// <returns>A list of validation error messages.</returns>
-        private static List<string> ValidateSchema(XmlDocument xmlDoc, string schemaPath)
-        {
-            var errors = new List<string>();
-            try
-            {
-                // Perform XSD 1.1 assertion validation
-                var assertionErrors = ValidateXsd11Assertions(xmlDoc, schemaPath);
-                errors.AddRange(assertionErrors);
-
-                // Perform identity constraint validation using custom logic
-                var identityErrors = ValidateIdentityConstraints(xmlDoc, schemaPath);
-                errors.AddRange(identityErrors);
-            }
-            catch (Exception ex)
-            {
-                errors.Add($"Schema validation error: {ex.Message}");
-            }
-            return errors;
         }
 
         /// <summary>

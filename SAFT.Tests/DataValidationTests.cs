@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using SAFT.Lib;
+using SAFT.Lib.Validation;
 
 namespace SAFT.Tests
 {

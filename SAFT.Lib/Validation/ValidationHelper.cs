@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
-namespace SAFT.Lib
+namespace SAFT.Lib.Validation
 {
     /// <summary>
     /// Provides utility methods for validating SAF-T objects using data annotations.
