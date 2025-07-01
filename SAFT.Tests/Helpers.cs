@@ -14,7 +14,19 @@ namespace SAFT.Tests
                 if (solutionDir == null)
                     throw new FileNotFoundException("Could not find SAFT.sln file");
             }
-            return Path.Combine(solutionDir, "schema1_04_fixed.xsd");
+            var schemaPath = Path.Combine(solutionDir, "schema1_04_fixed.xsd");
+            EnsureSchemaInOutputDirectory(schemaPath);
+            return schemaPath;
+        }
+
+        private static void EnsureSchemaInOutputDirectory(string schemaPath)
+        {
+            var outputDir = Directory.GetCurrentDirectory();
+            var outputSchemaPath = Path.Combine(outputDir, "schema1_04_fixed.xsd");
+            if (!File.Exists(outputSchemaPath) && File.Exists(schemaPath))
+            {
+                File.Copy(schemaPath, outputSchemaPath);
+            }
         }
 
         public static string GetSaftPath()

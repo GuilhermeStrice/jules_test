@@ -5,7 +5,7 @@
     <CompanyID>503140600</CompanyID>
     <TaxRegistrationNumber>503140600</TaxRegistrationNumber>
     <TaxAccountingBasis>I</TaxAccountingBasis>
-    <CompanyName>Empresa de demonstra��o (PRIVA)</CompanyName>
+    <CompanyName>Empresa de demonstração (PRIVA)</CompanyName>
     <CompanyAddress>
       <StreetName>Rua das Flores</StreetName>
       <AddressDetail>Rua das Flores</AddressDetail>
@@ -62,7 +62,7 @@
       </Account>
       <Account>
         <AccountID>12</AccountID>
-        <AccountDescription>Dep�sitos � Ordem</AccountDescription>
+        <AccountDescription>Depósitos à Ordem</AccountDescription>
         <OpeningDebitBalance>8592.92</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>7592.92</ClosingDebitBalance>
@@ -125,7 +125,7 @@
       </Account>
       <Account>
         <AccountID>21111003</AccountID>
-        <AccountDescription>Jos� Maria Fernandes &amp; Filhos, Lda.</AccountDescription>
+        <AccountDescription>José Maria Fernandes &amp; Filhos, Lda.</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>2511.98</ClosingDebitBalance>
@@ -136,7 +136,7 @@
       </Account>
       <Account>
         <AccountID>21113001</AccountID>
-        <AccountDescription>Inforshow, Inform�tica Comunica��o</AccountDescription>
+        <AccountDescription>Inforshow, Informática Comunicação</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>1781.70</ClosingDebitBalance>
@@ -147,7 +147,7 @@
       </Account>
       <Account>
         <AccountID>21113006</AccountID>
-        <AccountDescription>Maria Jos� da Silva</AccountDescription>
+        <AccountDescription>Maria José da Silva</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>3412.86</ClosingDebitBalance>
@@ -201,7 +201,7 @@
       </Account>
       <Account>
         <AccountID>212</AccountID>
-        <AccountDescription>Clientes - T�tulos a Receber</AccountDescription>
+        <AccountDescription>Clientes - Títulos a Receber</AccountDescription>
         <OpeningDebitBalance>1176.37</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>1176.37</ClosingDebitBalance>
@@ -211,7 +211,7 @@
       </Account>
       <Account>
         <AccountID>2121</AccountID>
-        <AccountDescription>Clientes - T�t. - Mercado Nacional</AccountDescription>
+        <AccountDescription>Clientes - Tít. - Mercado Nacional</AccountDescription>
         <OpeningDebitBalance>1176.37</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>1176.37</ClosingDebitBalance>
@@ -263,7 +263,7 @@
       </Account>
       <Account>
         <AccountID>21911003</AccountID>
-        <AccountDescription>Jos� Maria Fernandes &amp; Filhos, Lda.</AccountDescription>
+        <AccountDescription>José Maria Fernandes &amp; Filhos, Lda.</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>35.60</OpeningCreditBalance>
         <ClosingDebitBalance>0.00</ClosingDebitBalance>
@@ -336,7 +336,7 @@
       </Account>
       <Account>
         <AccountID>24</AccountID>
-        <AccountDescription>Estados e Outros Entes P�blicos</AccountDescription>
+        <AccountDescription>Estados e Outros Entes Públicos</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>1688.52</OpeningCreditBalance>
         <ClosingDebitBalance>0.00</ClosingDebitBalance>
@@ -355,7 +355,7 @@
       </Account>
       <Account>
         <AccountID>2432</AccountID>
-        <AccountDescription>Iva - Dedut�vel</AccountDescription>
+        <AccountDescription>Iva - Dedutível</AccountDescription>
         <OpeningDebitBalance>1182.30</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>3950.78</ClosingDebitBalance>
@@ -365,7 +365,7 @@
       </Account>
       <Account>
         <AccountID>24321</AccountID>
-        <AccountDescription>Exist�ncias</AccountDescription>
+        <AccountDescription>Existências</AccountDescription>
         <OpeningDebitBalance>1182.30</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>3950.78</ClosingDebitBalance>
@@ -375,7 +375,7 @@
       </Account>
       <Account>
         <AccountID>243211</AccountID>
-        <AccountDescription>Exist�ncias Continente</AccountDescription>
+        <AccountDescription>Existências Continente</AccountDescription>
         <OpeningDebitBalance>1182.30</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>3950.78</ClosingDebitBalance>
@@ -415,7 +415,7 @@
       </Account>
       <Account>
         <AccountID>24321132011</AccountID>
-        <AccountDescription>Ex. Tx. Nm..- MN-TT/Dedut�vel</AccountDescription>
+        <AccountDescription>Ex. Tx. Nm..- MN-TT/Dedutível</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>41.63</ClosingDebitBalance>
@@ -446,7 +446,7 @@
       </Account>
       <Account>
         <AccountID>24321132111</AccountID>
-        <AccountDescription>Ex. Tx. Nm..- MN-TT/Dedut�vel</AccountDescription>
+        <AccountDescription>Ex. Tx. Nm..- MN-TT/Dedutível</AccountDescription>
         <OpeningDebitBalance>1182.30</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>3909.15</ClosingDebitBalance>
@@ -549,7 +549,7 @@
       </Account>
       <Account>
         <AccountID>243312</AccountID>
-        <AccountDescription>Iva Liq. - Presta��es de Servi�os</AccountDescription>
+        <AccountDescription>Iva Liq. - Prestações de Serviços</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>0.00</ClosingDebitBalance>
@@ -559,7 +559,7 @@
       </Account>
       <Account>
         <AccountID>2433121</AccountID>
-        <AccountDescription>Iva Liq. - Prest. de Servi�os-Continente</AccountDescription>
+        <AccountDescription>Iva Liq. - Prest. de Serviços-Continente</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>0.00</ClosingDebitBalance>
@@ -734,7 +734,7 @@
       </Account>
       <Account>
         <AccountID>3161</AccountID>
-        <AccountDescription>Compras-Mat�rias Primas</AccountDescription>
+        <AccountDescription>Compras-Matérias Primas</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>3844.08</ClosingDebitBalance>
@@ -755,7 +755,7 @@
       </Account>
       <Account>
         <AccountID>319</AccountID>
-        <AccountDescription>Imputa��o de Compras</AccountDescription>
+        <AccountDescription>Imputação de Compras</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>0.00</ClosingDebitBalance>
@@ -816,7 +816,7 @@
       </Account>
       <Account>
         <AccountID>36</AccountID>
-        <AccountDescription>Mat�rias-Primas, Subs. e de Consumo</AccountDescription>
+        <AccountDescription>Matérias-Primas, Subs. e de Consumo</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>2585.04</ClosingDebitBalance>
@@ -825,7 +825,7 @@
       </Account>
       <Account>
         <AccountID>361</AccountID>
-        <AccountDescription>Mat�rias-Primas</AccountDescription>
+        <AccountDescription>Matérias-Primas</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>2585.04</ClosingDebitBalance>
@@ -835,7 +835,7 @@
       </Account>
       <Account>
         <AccountID>3612</AccountID>
-        <AccountDescription>Mat�rias-Primas - CEVC</AccountDescription>
+        <AccountDescription>Matérias-Primas - CEVC</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>2585.04</ClosingDebitBalance>
@@ -865,7 +865,7 @@
       </Account>
       <Account>
         <AccountID>6161</AccountID>
-        <AccountDescription>Mat�rias Primas</AccountDescription>
+        <AccountDescription>Matérias Primas</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>1259.04</ClosingDebitBalance>
@@ -875,7 +875,7 @@
       </Account>
       <Account>
         <AccountID>61611</AccountID>
-        <AccountDescription>Mat�rias Primas - CMPVC</AccountDescription>
+        <AccountDescription>Matérias Primas - CMPVC</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>1259.04</ClosingDebitBalance>
@@ -886,7 +886,7 @@
       </Account>
       <Account>
         <AccountID>62</AccountID>
-        <AccountDescription>Fornecimentos e Servi�os Externos</AccountDescription>
+        <AccountDescription>Fornecimentos e Serviços Externos</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>560.00</ClosingDebitBalance>
@@ -895,7 +895,7 @@
       </Account>
       <Account>
         <AccountID>622</AccountID>
-        <AccountDescription>Fornecimentos e Servi�os</AccountDescription>
+        <AccountDescription>Fornecimentos e Serviços</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>560.00</ClosingDebitBalance>
@@ -905,7 +905,7 @@
       </Account>
       <Account>
         <AccountID>62212</AccountID>
-        <AccountDescription>Combust�veis</AccountDescription>
+        <AccountDescription>Combustíveis</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>560.00</ClosingDebitBalance>
@@ -915,7 +915,7 @@
       </Account>
       <Account>
         <AccountID>622122</AccountID>
-        <AccountDescription>Combust�veis - Gasolina</AccountDescription>
+        <AccountDescription>Combustíveis - Gasolina</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>560.00</ClosingDebitBalance>
@@ -966,7 +966,7 @@
       </Account>
       <Account>
         <AccountID>72</AccountID>
-        <AccountDescription>Presta��es de Servi�os</AccountDescription>
+        <AccountDescription>Prestações de Serviços</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>0.00</ClosingDebitBalance>
@@ -975,7 +975,7 @@
       </Account>
       <Account>
         <AccountID>721</AccountID>
-        <AccountDescription>Servi�o A</AccountDescription>
+        <AccountDescription>Serviço A</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>0.00</ClosingDebitBalance>
@@ -985,7 +985,7 @@
       </Account>
       <Account>
         <AccountID>7211</AccountID>
-        <AccountDescription>Servi�o A - Mercado Nacional</AccountDescription>
+        <AccountDescription>Serviço A - Mercado Nacional</AccountDescription>
         <OpeningDebitBalance>0.00</OpeningDebitBalance>
         <OpeningCreditBalance>0.00</OpeningCreditBalance>
         <ClosingDebitBalance>0.00</ClosingDebitBalance>
@@ -1042,13 +1042,13 @@
       <CustomerTaxID>501442600</CustomerTaxID>
       <CompanyName>Domingos</CompanyName>
       <BillingAddress>
-        <AddressDetail>Rua X n� 10</AddressDetail>
+        <AddressDetail>Rua X nº 10</AddressDetail>
         <City>Espinho</City>
         <PostalCode>1234-123</PostalCode>
         <Country>PT</Country>
       </BillingAddress>
       <ShipToAddress>
-        <AddressDetail>Rua X n� 10</AddressDetail>
+        <AddressDetail>Rua X nº 10</AddressDetail>
         <City>Espinho</City>
         <PostalCode>1234-123</PostalCode>
         <Country>PT</Country>

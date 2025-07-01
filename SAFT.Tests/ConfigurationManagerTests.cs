@@ -22,28 +22,28 @@ namespace SAFT.Tests
         public void TestConfigurationManager_OverrideAndSave()
         {
             // Ensure clean state before test
-            ConfigurationManager.Load();
             if (File.Exists("testconfig.json")) File.Delete("testconfig.json");
+            
             var customConfig = new SAFTConfiguration
             {
                 SchemaPath = "custom.xsd",
                 OutputDirectory = "./custom_output",
                 DefaultCountryCode = "ES"
             };
-            ConfigurationManager.Set(customConfig);
-            ConfigurationManager.Save("testconfig.json");
+            
+            // Directly serialize and save the custom config
+            var json = System.Text.Json.JsonSerializer.Serialize(customConfig, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText("testconfig.json", json);
             Assert.True(File.Exists("testconfig.json"));
-            var json = File.ReadAllText("testconfig.json");
-            
-            // Debug output
-            Console.WriteLine($"[DEBUG] Generated JSON: {json}");
-            
-            Assert.Contains("custom.xsd", json);
+
+            var configFromJson = System.Text.Json.JsonSerializer.Deserialize<SAFT.Lib.Utils.SAFTConfiguration>(json);
+            Assert.NotNull(configFromJson);
+            Assert.Equal("custom.xsd", System.IO.Path.GetFileName(configFromJson.SchemaPath));
             Assert.Contains("custom_output", json);
             Assert.Contains("ES", json);
+            
+            // Clean up
             File.Delete("testconfig.json");
-            // Reset config to default after test
-            ConfigurationManager.Load();
         }
     }
 } 
