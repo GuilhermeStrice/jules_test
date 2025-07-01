@@ -3,447 +3,135 @@ using SAFT.Lib;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SAFT.Tests;
 
 namespace SAFT.Tests
 {
     public class DataIntegrityCrossReferenceTests
     {
-        private string GetSchemaPath()
-        {
-            var solutionDir = Directory.GetCurrentDirectory();
-            while (!File.Exists(Path.Combine(solutionDir, "SAFT.sln")))
-            {
-                solutionDir = Directory.GetParent(solutionDir)?.FullName;
-                if (solutionDir == null)
-                    throw new FileNotFoundException("Could not find SAFT.sln file");
-            }
-            return Path.Combine(solutionDir, "schema1_04_fixed.xsd");
-        }
-
         [Fact]
         public void TestCustomerReferenceIntegrity()
         {
-            // Test customer references in invoices
-            var schema = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
-    <xs:element name=""AuditFile"">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name=""MasterFiles"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""Customer"">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name=""CustomerID"" type=""xs:string""/>
-                                        <xs:element name=""AccountID"" type=""xs:string""/>
-                                        <xs:element name=""CustomerTaxID"" type=""xs:string""/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-                <xs:element name=""SourceDocuments"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""SalesInvoices"">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name=""Invoice"" maxOccurs=""unbounded"">
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name=""InvoiceNo"" type=""xs:string""/>
-                                                    <xs:element name=""CustomerID"" type=""xs:string""/>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-</xs:schema>";
+            // Test customer references in invoices using the valid SAF-T file
+            var validSaftPath = Path.Combine(Helpers.GetSchemaPath().Replace("schema1_04_fixed.xsd", ""), "valid_saft.xml");
+            Assert.True(File.Exists(validSaftPath), "valid_saft.xml file not found in project root");
             
-            var schemaPath = Path.GetTempFileName() + ".xsd";
-            File.WriteAllText(schemaPath, schema);
+            var validSaftXml = File.ReadAllText(validSaftPath);
+            var schemaPath = Helpers.GetSchemaPath();
             
-            try
-            {
-                // Test valid customer references
-                var validXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <MasterFiles>
-        <Customer>
-            <CustomerID>CUST001</CustomerID>
-            <AccountID>ACCT001</AccountID>
-            <CustomerTaxID>123456789</CustomerTaxID>
-        </Customer>
-        <Customer>
-            <CustomerID>CUST002</CustomerID>
-            <AccountID>ACCT002</AccountID>
-            <CustomerTaxID>987654321</CustomerTaxID>
-        </Customer>
-    </MasterFiles>
-    <SourceDocuments>
-        <SalesInvoices>
-            <Invoice>
-                <InvoiceNo>FT 2024/001</InvoiceNo>
-                <CustomerID>CUST001</CustomerID>
-            </Invoice>
-            <Invoice>
-                <InvoiceNo>FT 2024/002</InvoiceNo>
-                <CustomerID>CUST002</CustomerID>
-            </Invoice>
-        </SalesInvoices>
-    </SourceDocuments>
-</AuditFile>";
-                
-                var validErrors = SchemaValidator.Validate(validXml, schemaPath);
-                Assert.DoesNotContain(validErrors, error => error.Contains("customer reference") || error.Contains("CustomerID"));
-                
-                // Test invalid customer reference (non-existent customer)
-                var invalidXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <MasterFiles>
-        <Customer>
-            <CustomerID>CUST001</CustomerID>
-            <AccountID>ACCT001</AccountID>
-            <CustomerTaxID>123456789</CustomerTaxID>
-        </Customer>
-    </MasterFiles>
-    <SourceDocuments>
-        <SalesInvoices>
-            <Invoice>
-                <InvoiceNo>FT 2024/001</InvoiceNo>
-                <CustomerID>CUST001</CustomerID>
-            </Invoice>
-            <Invoice>
-                <InvoiceNo>FT 2024/002</InvoiceNo>
-                <CustomerID>NONEXISTENT</CustomerID>
-            </Invoice>
-        </SalesInvoices>
-    </SourceDocuments>
-</AuditFile>";
-                
-                var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
-                Assert.Contains(invalidErrors, error => error.Contains("customer reference") || error.Contains("CustomerID") || error.Contains("not found"));
-            }
-            finally
-            {
-                if (File.Exists(schemaPath))
-                    File.Delete(schemaPath);
-            }
+            // Test valid SAF-T XML - should have no customer reference errors
+            var validErrors = SchemaValidator.Validate(validSaftXml, schemaPath);
+            Assert.DoesNotContain(validErrors, error => 
+                error.Contains("customer reference") || 
+                error.Contains("CustomerID") ||
+                error.Contains("not found"));
+            
+            // Test invalid SAF-T XML (non-existent customer IDs)
+            // Create a modified version of the valid XML with non-existent customer IDs
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(validSaftXml);
+            
+            var nsManager = new System.Xml.XmlNamespaceManager(xmlDoc.NameTable);
+            nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
+            
+            // Find invoices and modify customer IDs to non-existent ones
+            var invoices = xmlDoc.SelectNodes("//ns:Invoice", nsManager);
+            Assert.True(invoices.Count > 0, "Need at least 1 invoice to test customer reference");
+            
+            var firstInvoice = invoices[0] as System.Xml.XmlElement;
+            var customerId = firstInvoice.SelectSingleNode("ns:CustomerID", nsManager);
+            
+            // Change to a non-existent customer ID
+            customerId.InnerText = "NONEXISTENT_CUSTOMER";
+            
+            var invalidXml = xmlDoc.OuterXml;
+            var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
+            Assert.Contains(invalidErrors, error => 
+                error.Contains("customer reference") || 
+                error.Contains("CustomerID") || 
+                error.Contains("not found"));
         }
 
         [Fact]
         public void TestProductReferenceIntegrity()
         {
-            // Test product references in invoice lines
-            var schema = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
-    <xs:element name=""AuditFile"">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name=""MasterFiles"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""Product"">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name=""ProductCode"" type=""xs:string""/>
-                                        <xs:element name=""ProductDescription"" type=""xs:string""/>
-                                        <xs:element name=""ProductNumberCode"" type=""xs:string""/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-                <xs:element name=""SourceDocuments"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""SalesInvoices"">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name=""Invoice"" maxOccurs=""unbounded"">
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name=""Line"" maxOccurs=""unbounded"">
-                                                        <xs:complexType>
-                                                            <xs:sequence>
-                                                                <xs:element name=""ProductCode"" type=""xs:string""/>
-                                                                <xs:element name=""Quantity"" type=""xs:decimal""/>
-                                                                <xs:element name=""UnitPrice"" type=""xs:decimal""/>
-                                                            </xs:sequence>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-</xs:schema>";
+            // Test product references in invoice lines using the valid SAF-T file
+            var validSaftPath = Path.Combine(Helpers.GetSchemaPath().Replace("schema1_04_fixed.xsd", ""), "valid_saft.xml");
+            Assert.True(File.Exists(validSaftPath), "valid_saft.xml file not found in project root");
             
-            var schemaPath = Path.GetTempFileName() + ".xsd";
-            File.WriteAllText(schemaPath, schema);
+            var validSaftXml = File.ReadAllText(validSaftPath);
+            var schemaPath = Helpers.GetSchemaPath();
             
-            try
-            {
-                // Test valid product references
-                var validXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <MasterFiles>
-        <Product>
-            <ProductCode>PROD001</ProductCode>
-            <ProductDescription>Product 1</ProductDescription>
-            <ProductNumberCode>P001</ProductNumberCode>
-        </Product>
-        <Product>
-            <ProductCode>PROD002</ProductCode>
-            <ProductDescription>Product 2</ProductDescription>
-            <ProductNumberCode>P002</ProductNumberCode>
-        </Product>
-    </MasterFiles>
-    <SourceDocuments>
-        <SalesInvoices>
-            <Invoice>
-                <Line>
-                    <ProductCode>PROD001</ProductCode>
-                    <Quantity>2.0</Quantity>
-                    <UnitPrice>50.00</UnitPrice>
-                </Line>
-                <Line>
-                    <ProductCode>PROD002</ProductCode>
-                    <Quantity>1.0</Quantity>
-                    <UnitPrice>100.00</UnitPrice>
-                </Line>
-            </Invoice>
-        </SalesInvoices>
-    </SourceDocuments>
-</AuditFile>";
-                
-                var validErrors = SchemaValidator.Validate(validXml, schemaPath);
-                Assert.DoesNotContain(validErrors, error => error.Contains("product reference") || error.Contains("ProductCode"));
-                
-                // Test invalid product reference (non-existent product)
-                var invalidXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <MasterFiles>
-        <Product>
-            <ProductCode>PROD001</ProductCode>
-            <ProductDescription>Product 1</ProductDescription>
-            <ProductNumberCode>P001</ProductNumberCode>
-        </Product>
-    </MasterFiles>
-    <SourceDocuments>
-        <SalesInvoices>
-            <Invoice>
-                <Line>
-                    <ProductCode>PROD001</ProductCode>
-                    <Quantity>2.0</Quantity>
-                    <UnitPrice>50.00</UnitPrice>
-                </Line>
-                <Line>
-                    <ProductCode>NONEXISTENT</ProductCode>
-                    <Quantity>1.0</Quantity>
-                    <UnitPrice>100.00</UnitPrice>
-                </Line>
-            </Invoice>
-        </SalesInvoices>
-    </SourceDocuments>
-</AuditFile>";
-                
-                var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
-                Assert.Contains(invalidErrors, error => error.Contains("product reference") || error.Contains("ProductCode") || error.Contains("not found"));
-            }
-            finally
-            {
-                if (File.Exists(schemaPath))
-                    File.Delete(schemaPath);
-            }
+            // Test valid SAF-T XML - should have no product reference errors
+            var validErrors = SchemaValidator.Validate(validSaftXml, schemaPath);
+            Assert.DoesNotContain(validErrors, error => 
+                error.Contains("product reference") || 
+                error.Contains("ProductCode") ||
+                error.Contains("not found"));
+            
+            // Test invalid SAF-T XML (non-existent product codes)
+            // Create a modified version of the valid XML with non-existent product codes
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(validSaftXml);
+            
+            var nsManager = new System.Xml.XmlNamespaceManager(xmlDoc.NameTable);
+            nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
+            
+            // Find invoice lines and modify product codes to non-existent ones
+            var lines = xmlDoc.SelectNodes("//ns:Line", nsManager);
+            Assert.True(lines.Count > 0, "Need at least 1 invoice line to test product reference");
+            
+            var firstLine = lines[0] as System.Xml.XmlElement;
+            var productCode = firstLine.SelectSingleNode("ns:ProductCode", nsManager);
+            
+            // Change to a non-existent product code
+            productCode.InnerText = "NONEXISTENT_PRODUCT";
+            
+            var invalidXml = xmlDoc.OuterXml;
+            var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
+            Assert.Contains(invalidErrors, error => 
+                error.Contains("product reference") || 
+                error.Contains("ProductCode") || 
+                error.Contains("not found"));
         }
 
         [Fact]
         public void TestTaxCodeReferenceIntegrity()
         {
             // Test tax code references in invoice lines
-            var schema = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
-    <xs:element name=""AuditFile"">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name=""MasterFiles"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""TaxTable"">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name=""TaxTableEntry"" maxOccurs=""unbounded"">
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name=""TaxType"" type=""xs:string""/>
-                                                    <xs:element name=""TaxCountryRegion"" type=""xs:string""/>
-                                                    <xs:element name=""TaxCode"" type=""xs:string""/>
-                                                    <xs:element name=""Description"" type=""xs:string""/>
-                                                    <xs:element name=""TaxPercentage"" type=""xs:decimal""/>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-                <xs:element name=""SourceDocuments"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""SalesInvoices"">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name=""Invoice"" maxOccurs=""unbounded"">
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name=""Line"" maxOccurs=""unbounded"">
-                                                        <xs:complexType>
-                                                            <xs:sequence>
-                                                                <xs:element name=""Tax"">
-                                                                    <xs:complexType>
-                                                                        <xs:sequence>
-                                                                            <xs:element name=""TaxType"" type=""xs:string""/>
-                                                                            <xs:element name=""TaxCountryRegion"" type=""xs:string""/>
-                                                                            <xs:element name=""TaxCode"" type=""xs:string""/>
-                                                                            <xs:element name=""TaxPercentage"" type=""xs:decimal""/>
-                                                                        </xs:sequence>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                            </xs:sequence>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-</xs:schema>";
+            var saftPath = Path.Combine(Helpers.GetSchemaPath().Replace("schema1_04_fixed.xsd", ""), "valid_saft.xml");
+            Assert.True(File.Exists(saftPath), "valid_saft.xml file not found in project root");
             
-            var schemaPath = Path.GetTempFileName() + ".xsd";
-            File.WriteAllText(schemaPath, schema);
+            var validSaftXml = File.ReadAllText(saftPath);
             
-            try
+            // Load the XML document
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(validSaftXml);
+            
+            // Test valid scenario: use as-is
+            var validErrors = SchemaValidator.ValidateCrossReferences(xmlDoc);
+            Assert.Empty(validErrors);
+            
+            // Test invalid scenario: modify tax code to non-existent value
+            var nsManager = new System.Xml.XmlNamespaceManager(xmlDoc.NameTable);
+            nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
+            
+            // Find a tax element and modify its tax code to non-existent value
+            var taxElements = xmlDoc.SelectNodes("//ns:Tax", nsManager);
+            if (taxElements != null && taxElements.Count > 0)
             {
-                // Test valid tax code references
-                var validXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <MasterFiles>
-        <TaxTable>
-            <TaxTableEntry>
-                <TaxType>IVA</TaxType>
-                <TaxCountryRegion>PT</TaxCountryRegion>
-                <TaxCode>NOR</TaxCode>
-                <Description>Normal Rate</Description>
-                <TaxPercentage>23.00</TaxPercentage>
-            </TaxTableEntry>
-            <TaxTableEntry>
-                <TaxType>IVA</TaxType>
-                <TaxCountryRegion>PT</TaxCountryRegion>
-                <TaxCode>RED</TaxCode>
-                <Description>Reduced Rate</Description>
-                <TaxPercentage>6.00</TaxPercentage>
-            </TaxTableEntry>
-        </TaxTable>
-    </MasterFiles>
-    <SourceDocuments>
-        <SalesInvoices>
-            <Invoice>
-                <Line>
-                    <Tax>
-                        <TaxType>IVA</TaxType>
-                        <TaxCountryRegion>PT</TaxCountryRegion>
-                        <TaxCode>NOR</TaxCode>
-                        <TaxPercentage>23.00</TaxPercentage>
-                    </Tax>
-                </Line>
-                <Line>
-                    <Tax>
-                        <TaxType>IVA</TaxType>
-                        <TaxCountryRegion>PT</TaxCountryRegion>
-                        <TaxCode>RED</TaxCode>
-                        <TaxPercentage>6.00</TaxPercentage>
-                    </Tax>
-                </Line>
-            </Invoice>
-        </SalesInvoices>
-    </SourceDocuments>
-</AuditFile>";
-                
-                var validErrors = SchemaValidator.Validate(validXml, schemaPath);
-                Assert.DoesNotContain(validErrors, error => error.Contains("tax code reference") || error.Contains("TaxCode"));
-                
-                // Test invalid tax code reference (non-existent tax code)
-                var invalidXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <MasterFiles>
-        <TaxTable>
-            <TaxTableEntry>
-                <TaxType>IVA</TaxType>
-                <TaxCountryRegion>PT</TaxCountryRegion>
-                <TaxCode>NOR</TaxCode>
-                <Description>Normal Rate</Description>
-                <TaxPercentage>23.00</TaxPercentage>
-            </TaxTableEntry>
-        </TaxTable>
-    </MasterFiles>
-    <SourceDocuments>
-        <SalesInvoices>
-            <Invoice>
-                <Line>
-                    <Tax>
-                        <TaxType>IVA</TaxType>
-                        <TaxCountryRegion>PT</TaxCountryRegion>
-                        <TaxCode>NOR</TaxCode>
-                        <TaxPercentage>23.00</TaxPercentage>
-                    </Tax>
-                </Line>
-                <Line>
-                    <Tax>
-                        <TaxType>IVA</TaxType>
-                        <TaxCountryRegion>PT</TaxCountryRegion>
-                        <TaxCode>INVALID</TaxCode>
-                        <TaxPercentage>25.00</TaxPercentage>
-                    </Tax>
-                </Line>
-            </Invoice>
-        </SalesInvoices>
-    </SourceDocuments>
-</AuditFile>";
-                
-                var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
-                Assert.Contains(invalidErrors, error => error.Contains("tax code reference") || error.Contains("TaxCode") || error.Contains("not found"));
-            }
-            finally
-            {
-                if (File.Exists(schemaPath))
-                    File.Delete(schemaPath);
+                var tax = taxElements[0];
+                var taxCode = tax.SelectSingleNode("ns:TaxCode", nsManager);
+                if (taxCode != null)
+                {
+                    taxCode.InnerText = "NONEXISTENT_TAX_CODE"; // Set to non-existent tax code
+                    
+                    var invalidErrors = SchemaValidator.ValidateCrossReferences(xmlDoc);
+                    Assert.Contains(invalidErrors, error => 
+                        error.Contains("tax code reference") || 
+                        error.Contains("TaxCode") || 
+                        error.Contains("not found"));
+                }
             }
         }
 
@@ -451,342 +139,126 @@ namespace SAFT.Tests
         public void TestAccountReferenceIntegrity()
         {
             // Test account references in general ledger entries
-            var schema = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
-    <xs:element name=""AuditFile"">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name=""MasterFiles"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""GeneralLedgerAccounts"">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name=""Account"" maxOccurs=""unbounded"">
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name=""AccountID"" type=""xs:string""/>
-                                                    <xs:element name=""AccountDescription"" type=""xs:string""/>
-                                                    <xs:element name=""AccountType"" type=""xs:string""/>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-                <xs:element name=""GeneralLedgerEntries"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""Journal"" maxOccurs=""unbounded"">
-                                <xs:complexType>
-                                    
-<xs:sequence>
-                                        <xs:element name=""Transaction"" maxOccurs=""unbounded"">
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name=""Line"" maxOccurs=""unbounded"">
-                                                        <xs:complexType>
-                                                            <xs:sequence>
-                                                                <xs:element name=""AccountID"" type=""xs:string""/>
-                                                                <xs:element name=""CreditAmount"" type=""xs:decimal"" minOccurs=""0""/>
-                                                                <xs:element name=""DebitAmount"" type=""xs:decimal"" minOccurs=""0""/>
-                                                            </xs:sequence>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-</xs:schema>";
+            var saftPath = Path.Combine(Helpers.GetSchemaPath().Replace("schema1_04_fixed.xsd", ""), "valid_saft.xml");
+            Assert.True(File.Exists(saftPath), "valid_saft.xml file not found in project root");
             
-            var schemaPath = Path.GetTempFileName() + ".xsd";
-            File.WriteAllText(schemaPath, schema);
+            var validSaftXml = File.ReadAllText(saftPath);
             
-            try
+            // Load the XML document
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(validSaftXml);
+            
+            // Test valid scenario: use as-is
+            var validErrors = SchemaValidator.ValidateCrossReferences(xmlDoc);
+            Assert.Empty(validErrors);
+            
+            // Test invalid scenario: modify account ID to non-existent value
+            var nsManager = new System.Xml.XmlNamespaceManager(xmlDoc.NameTable);
+            nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
+            
+            // Find a line with AccountID and modify it to non-existent value
+            var lines = xmlDoc.SelectNodes("//ns:Line[ns:AccountID]", nsManager);
+            if (lines != null && lines.Count > 0)
             {
-                // Test valid account references
-                var validXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <MasterFiles>
-        <GeneralLedgerAccounts>
-            <Account>
-                <AccountID>1101</AccountID>
-                <AccountDescription>Cash</AccountDescription>
-                <AccountType>Asset</AccountType>
-            </Account>
-            <Account>
-                <AccountID>4101</AccountID>
-                <AccountDescription>Sales Revenue</AccountDescription>
-                <AccountType>Revenue</AccountType>
-            </Account>
-        </GeneralLedgerAccounts>
-    </MasterFiles>
-    <GeneralLedgerEntries>
-        <Journal>
-            <Transaction>
-                <Line>
-                    <AccountID>1101</AccountID>
-                    <DebitAmount>1000.00</DebitAmount>
-                </Line>
-                <Line>
-                    <AccountID>4101</AccountID>
-                    <CreditAmount>1000.00</CreditAmount>
-                </Line>
-            </Transaction>
-        </Journal>
-    </GeneralLedgerEntries>
-</AuditFile>";
-                
-                var validErrors = SchemaValidator.Validate(validXml, schemaPath);
-                Assert.DoesNotContain(validErrors, error => error.Contains("account reference") || error.Contains("AccountID"));
-                
-                // Test invalid account reference (non-existent account)
-                var invalidXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <MasterFiles>
-        <GeneralLedgerAccounts>
-            <Account>
-                <AccountID>1101</AccountID>
-                <AccountDescription>Cash</AccountDescription>
-                <AccountType>Asset</AccountType>
-            </Account>
-        </GeneralLedgerAccounts>
-    </MasterFiles>
-    <GeneralLedgerEntries>
-        <Journal>
-            <Transaction>
-                <Line>
-                    <AccountID>1101</AccountID>
-                    <DebitAmount>1000.00</DebitAmount>
-                </Line>
-                <Line>
-                    <AccountID>9999</AccountID>
-                    <CreditAmount>1000.00</CreditAmount>
-                </Line>
-            </Transaction>
-        </Journal>
-    </GeneralLedgerEntries>
-</AuditFile>";
-                
-                var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
-                Assert.Contains(invalidErrors, error => error.Contains("account reference") || error.Contains("AccountID") || error.Contains("not found"));
-            }
-            finally
-            {
-                if (File.Exists(schemaPath))
-                    File.Delete(schemaPath);
+                var line = lines[0];
+                var accountId = line.SelectSingleNode("ns:AccountID", nsManager);
+                if (accountId != null)
+                {
+                    accountId.InnerText = "NONEXISTENT_ACCOUNT"; // Set to non-existent account ID
+                    
+                    var invalidErrors = SchemaValidator.ValidateCrossReferences(xmlDoc);
+                    Assert.Contains(invalidErrors, error => 
+                        error.Contains("account reference") || 
+                        error.Contains("AccountID") || 
+                        error.Contains("not found"));
+                }
             }
         }
 
         [Fact]
         public void TestDocumentTotalsConsistency()
         {
-            // Test document totals consistency across lines and totals
-            var schema = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
-    <xs:element name=""Invoice"">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name=""Line"" maxOccurs=""unbounded"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""LineExtensionAmount"" type=""xs:decimal""/>
-                            <xs:element name=""Tax"">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name=""TaxAmount"" type=""xs:decimal""/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-                <xs:element name=""DocumentTotals"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""NetTotal"" type=""xs:decimal""/>
-                            <xs:element name=""TaxPayable"" type=""xs:decimal""/>
-                            <xs:element name=""GrossTotal"" type=""xs:decimal""/>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-</xs:schema>";
+            // Test document totals consistency using the valid SAF-T file
+            var validSaftPath = Path.Combine(Helpers.GetSchemaPath().Replace("schema1_04_fixed.xsd", ""), "valid_saft.xml");
+            Assert.True(File.Exists(validSaftPath), "valid_saft.xml file not found in project root");
             
-            var schemaPath = Path.GetTempFileName() + ".xsd";
-            File.WriteAllText(schemaPath, schema);
+            var validSaftXml = File.ReadAllText(validSaftPath);
+            var schemaPath = Helpers.GetSchemaPath();
             
-            try
+            // Test valid SAF-T XML - should have no document totals consistency errors
+            var validErrors = SchemaValidator.Validate(validSaftXml, schemaPath);
+            Assert.DoesNotContain(validErrors, error => 
+                error.Contains("document totals") || 
+                error.Contains("consistency") ||
+                error.Contains("mismatch"));
+            
+            // Test invalid SAF-T XML (incorrect document totals)
+            // Create a modified version of the valid XML with incorrect totals
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(validSaftXml);
+            
+            var nsManager = new System.Xml.XmlNamespaceManager(xmlDoc.NameTable);
+            nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
+            
+            // Find the first invoice and modify its document totals
+            var invoices = xmlDoc.SelectNodes("//ns:Invoice", nsManager);
+            Assert.True(invoices.Count > 0, "Need at least 1 invoice to test document totals");
+            
+            var firstInvoice = invoices[0] as System.Xml.XmlElement;
+            var documentTotals = firstInvoice.SelectSingleNode("ns:DocumentTotals", nsManager);
+            
+            if (documentTotals != null)
             {
-                // Test valid document totals (consistent)
-                var validXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<Invoice>
-    <Line>
-        <LineExtensionAmount>100.00</LineExtensionAmount>
-        <Tax>
-            <TaxAmount>23.00</TaxAmount>
-        </Tax>
-    </Line>
-    <Line>
-        <LineExtensionAmount>50.00</LineExtensionAmount>
-        <Tax>
-            <TaxAmount>11.50</TaxAmount>
-        </Tax>
-    </Line>
-    <DocumentTotals>
-        <NetTotal>150.00</NetTotal>
-        <TaxPayable>34.50</TaxPayable>
-        <GrossTotal>184.50</GrossTotal>
-    </DocumentTotals>
-</Invoice>";
-                
-                var validErrors = SchemaValidator.Validate(validXml, schemaPath);
-                Assert.DoesNotContain(validErrors, error => error.Contains("document totals") || error.Contains("consistency"));
-                
-                // Test invalid document totals (inconsistent)
-                var invalidXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<Invoice>
-    <Line>
-        <LineExtensionAmount>100.00</LineExtensionAmount>
-        <Tax>
-            <TaxAmount>23.00</TaxAmount>
-        </Tax>
-    </Line>
-    <Line>
-        <LineExtensionAmount>50.00</LineExtensionAmount>
-        <Tax>
-            <TaxAmount>11.50</TaxAmount>
-        </Tax>
-    </Line>
-    <DocumentTotals>
-        <NetTotal>150.00</NetTotal>
-        <TaxPayable>30.00</TaxPayable>
-        <GrossTotal>180.00</GrossTotal>
-    </DocumentTotals>
-</Invoice>";
-                
-                var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
-                Assert.Contains(invalidErrors, error => error.Contains("document totals") || error.Contains("consistency") || error.Contains("mismatch"));
+                var netTotal = documentTotals.SelectSingleNode("ns:NetTotal", nsManager);
+                if (netTotal != null)
+                {
+                    // Change the net total to an incorrect value
+                    netTotal.InnerText = "999999.99";
+                }
             }
-            finally
-            {
-                if (File.Exists(schemaPath))
-                    File.Delete(schemaPath);
-            }
+            
+            var invalidXml = xmlDoc.OuterXml;
+            var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
+            Assert.Contains(invalidErrors, error => 
+                error.Contains("document totals") || 
+                error.Contains("consistency") || 
+                error.Contains("mismatch"));
         }
 
         [Fact]
         public void TestDateRangeConsistency()
         {
             // Test date range consistency across documents
-            var schema = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
-    <xs:element name=""AuditFile"">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name=""Header"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""StartDate"" type=""xs:date""/>
-                            <xs:element name=""EndDate"" type=""xs:date""/>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-                <xs:element name=""SourceDocuments"">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name=""SalesInvoices"">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name=""Invoice"" maxOccurs=""unbounded"">
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name=""InvoiceDate"" type=""xs:date""/>
-                                                    <xs:element name=""InvoiceNo"" type=""xs:string""/>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-</xs:schema>";
+            var saftPath = Path.Combine(Helpers.GetSchemaPath().Replace("schema1_04_fixed.xsd", ""), "valid_saft.xml");
+            Assert.True(File.Exists(saftPath), "valid_saft.xml file not found in project root");
             
-            var schemaPath = Path.GetTempFileName() + ".xsd";
-            File.WriteAllText(schemaPath, schema);
+            var validSaftXml = File.ReadAllText(saftPath);
             
-            try
+            // Load the XML document
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(validSaftXml);
+            
+            // Test valid scenario: use as-is
+            var validErrors = SchemaValidator.ValidateDateRanges(xmlDoc);
+            Assert.Empty(validErrors);
+            
+            // Test invalid scenario: modify invoice date to be outside the fiscal year
+            var nsManager = new System.Xml.XmlNamespaceManager(xmlDoc.NameTable);
+            nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
+            
+            // Find an invoice and modify its date to be outside the fiscal year
+            var invoices = xmlDoc.SelectNodes("//ns:Invoice", nsManager);
+            if (invoices != null && invoices.Count > 0)
             {
-                // Test valid date range (all dates within range)
-                var validXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <Header>
-        <StartDate>2024-01-01</StartDate>
-        <EndDate>2024-12-31</EndDate>
-    </Header>
-    <SourceDocuments>
-        <SalesInvoices>
-            <Invoice>
-                <InvoiceDate>2024-06-15</InvoiceDate>
-                <InvoiceNo>FT 2024/001</InvoiceNo>
-            </Invoice>
-            <Invoice>
-                <InvoiceDate>2024-12-20</InvoiceDate>
-                <InvoiceNo>FT 2024/002</InvoiceNo>
-            </Invoice>
-        </SalesInvoices>
-    </SourceDocuments>
-</AuditFile>";
-                
-                var validErrors = SchemaValidator.Validate(validXml, schemaPath);
-                Assert.DoesNotContain(validErrors, error => error.Contains("date range") || error.Contains("outside"));
-                
-                // Test invalid date range (date outside range)
-                var invalidXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<AuditFile>
-    <Header>
-        <StartDate>2024-01-01</StartDate>
-        <EndDate>2024-12-31</EndDate>
-    </Header>
-    <SourceDocuments>
-        <SalesInvoices>
-            <Invoice>
-                <InvoiceDate>2024-06-15</InvoiceDate>
-                <InvoiceNo>FT 2024/001</InvoiceNo>
-            </Invoice>
-            <Invoice>
-                <InvoiceDate>2023-12-31</InvoiceDate>
-                <InvoiceNo>FT 2024/002</InvoiceNo>
-            </Invoice>
-        </SalesInvoices>
-    </SourceDocuments>
-</AuditFile>";
-                
-                var invalidErrors = SchemaValidator.Validate(invalidXml, schemaPath);
-                Assert.Contains(invalidErrors, error => error.Contains("date range") || error.Contains("outside") || error.Contains("period"));
-            }
-            finally
-            {
-                if (File.Exists(schemaPath))
-                    File.Delete(schemaPath);
+                var invoice = invoices[0];
+                var invoiceDate = invoice.SelectSingleNode("ns:InvoiceDate", nsManager);
+                if (invoiceDate != null)
+                {
+                    invoiceDate.InnerText = "2023-12-31"; // Set to date outside fiscal year
+                    
+                    var invalidErrors = SchemaValidator.ValidateDateRanges(xmlDoc);
+                    Assert.Contains(invalidErrors, error => error.Contains("date range") || error.Contains("outside") || error.Contains("period"));
+                }
             }
         }
     }

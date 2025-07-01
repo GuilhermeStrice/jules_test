@@ -19,7 +19,7 @@ Restricao: N para Normal, R para Regularizacoes do periodo de tributacao, A para
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Tipos de Movimento Contabilistico

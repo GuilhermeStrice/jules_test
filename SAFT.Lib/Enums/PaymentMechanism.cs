@@ -29,7 +29,7 @@ Restricao:CC para Cartao credito, CD para Cartao debito, CH para Cheque bancario
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Meio de pagamento

@@ -1,5 +1,5 @@
 using System.Xml.Serialization;
-using SAFT.Lib.Enums;
+using SAFT.Lib;
 
 namespace SAFT.Lib
 {

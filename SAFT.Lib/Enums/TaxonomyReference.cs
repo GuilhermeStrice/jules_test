@@ -19,7 +19,7 @@ S para SNC base (Taxonomia S), M para SNC microentidades (Taxonomia M), N para N
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Categoria da conta

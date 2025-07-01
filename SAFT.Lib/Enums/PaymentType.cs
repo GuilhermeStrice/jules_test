@@ -14,7 +14,7 @@ Restricao: RC para Recibo emitido no ambito do regime de IVA de Caixa (incluindo
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Tipo de pagamento SAFT Portugal

@@ -20,7 +20,7 @@ Restricao: Tipos de Documento (GR para Guia de remessa, GT para Guia de transpor
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Tipo de documento de movimentacao de mercadorias

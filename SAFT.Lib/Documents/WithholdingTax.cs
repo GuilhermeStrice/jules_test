@@ -13,7 +13,6 @@
  */
 
 using System.Xml.Serialization;
-using SAFT.Lib.Enums;
 
 namespace SAFT.Lib
 {

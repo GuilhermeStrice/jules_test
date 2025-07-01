@@ -1,11 +1,11 @@
 /*
  * Original XSD Schema:
- * <!-- Estrutura de Taxa dos recibos-->
- * <xs:complexType name="PaymentTax">
+ * <!-- Estrutura de Taxa -->
+ * <xs:complexType name="Tax">
  * <xs:sequence>
  * <xs:element ref="TaxType"/>
  * <xs:element ref="TaxCountryRegion"/>
- * <xs:element name="TaxCode" type="PaymentTaxCode"/>
+ * <xs:element ref="TaxCode"/>
  * <xs:choice>
  * <xs:element ref="TaxPercentage"/>
  * <xs:element ref="TaxAmount"/>
@@ -13,18 +13,18 @@
  * </xs:sequence>
  * </xs:complexType>
  * 
- * Description: Tax structure for payment receipts.
+ * Description: Tax structure for document lines.
  */
 
 using System.Xml.Serialization;
-using SAFT.Lib.Enums;
+using SAFT.Lib;
 
 namespace SAFT.Lib
 {
     /// <summary>
-    /// Represents tax structure for payment receipts.
+    /// Represents tax structure for document lines.
     /// </summary>
-    public class PaymentTax
+    public class Tax
     {
         /// <summary>
         /// The type of tax.
@@ -39,10 +39,10 @@ namespace SAFT.Lib
         public string TaxCountryRegion { get; set; } = string.Empty;
 
         /// <summary>
-        /// The payment tax code.
+        /// The tax code.
         /// </summary>
         [XmlElement("TaxCode")]
-        public PaymentTaxCode TaxCode { get; set; } = new PaymentTaxCode();
+        public string TaxCode { get; set; } = string.Empty;
 
         /// <summary>
         /// The tax percentage (used when TaxAmount is not specified).

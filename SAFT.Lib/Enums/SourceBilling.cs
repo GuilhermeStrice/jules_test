@@ -16,7 +16,7 @@
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Source Billing - indicates the source of billing documents

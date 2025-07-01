@@ -21,7 +21,7 @@ GR para conta de 1. grau da contabilidade geral, GA para conta agregadora ou int
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Categoria da conta

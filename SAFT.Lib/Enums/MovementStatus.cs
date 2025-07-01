@@ -20,7 +20,7 @@ N para Normal, T para Por conta de terceiros, A para Documento anulado, F para D
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Estado do documento MovementOfGoods

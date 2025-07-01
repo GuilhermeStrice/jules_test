@@ -12,7 +12,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Payment Tax Code

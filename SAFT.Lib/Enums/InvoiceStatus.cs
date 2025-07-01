@@ -20,7 +20,7 @@ N para Normal, S para Autofaturacao, A para Documento anulado, R para Documento 
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Estado do documento SalesInvoices

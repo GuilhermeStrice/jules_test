@@ -18,7 +18,7 @@ N para Normal, A para Anulado, F para faturado (quando para este documento tambe
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Estado do documento WorkingDocuments

@@ -155,21 +155,6 @@ namespace SAFT.Lib
         public SourceDocuments? SourceDocuments { get; set; }
 
         /// <summary>
-        /// Creates a default audit file with configuration values.
-        /// </summary>
-        /// <returns>A new AuditFile instance with default values from configuration.</returns>
-        public static AuditFile CreateDefault()
-        {
-            return new AuditFile
-            {
-                Header = Header.CreateDefault(),
-                MasterFiles = new MasterFiles(),
-                GeneralLedgerEntries = new GeneralLedgerEntries(),
-                SourceDocuments = new SourceDocuments()
-            };
-        }
-
-        /// <summary>
         /// Saves the audit file to the configured output directory.
         /// </summary>
         /// <param name="fileName">Optional filename (defaults to "saft_{fiscalYear}.xml")</param>

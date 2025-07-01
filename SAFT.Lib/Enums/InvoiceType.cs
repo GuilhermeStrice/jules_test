@@ -31,7 +31,7 @@ Restricao:FT para Fatura, emitida nos termos do artigo 36. do Codigo do IVA, FS 
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Tipo de documento de venda

@@ -11,7 +11,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// SAFT Portugal Taxonomy Code

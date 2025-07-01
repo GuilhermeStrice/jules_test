@@ -20,7 +20,7 @@ Restricao: P para Produtos, S para Servicos, O para Outros (Ex: portes debitados
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Tipos de produto

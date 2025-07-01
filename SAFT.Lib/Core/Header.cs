@@ -34,7 +34,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
-using SAFT.Lib.Enums;
 using SAFT.Lib.Utils;
 using SAFT.Lib.Constants;
 
@@ -215,29 +214,5 @@ namespace SAFT.Lib
         [Url(ErrorMessage = "Invalid website URL format")]
         [StringLength(60, ErrorMessage = "Website cannot exceed 60 characters")]
         public string? Website { get; set; }
-
-        /// <summary>
-        /// Creates a default header with configuration values.
-        /// </summary>
-        /// <returns>A new Header instance with default values from configuration.</returns>
-        public static Header CreateDefault()
-        {
-            var config = ConfigurationManager.Current;
-            var currentYear = config.DefaultFiscalYear > 0 ? config.DefaultFiscalYear : DateTime.Now.Year;
-            
-            return new Header
-            {
-                AuditFileVersion = SAFTConstants.AuditFileVersion,
-                CurrencyCode = config.DefaultCurrencyCode,
-                FiscalYear = currentYear.ToString(),
-                StartDate = $"{currentYear}-01-01",
-                EndDate = $"{currentYear}-12-31",
-                DateCreated = DateTimeUtils.FormatDateTimeForSaft(DateTime.Now),
-                CompanyAddress = new AddressStructure
-                {
-                    Country = config.DefaultCountryCode
-                }
-            };
-        }
     }
 } 

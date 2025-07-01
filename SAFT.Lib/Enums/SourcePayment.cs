@@ -16,7 +16,7 @@ P para documento produzido na aplicacao, I para documento integrado e produzido 
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Source Payment - indicates the source of payment documents

@@ -33,7 +33,7 @@ Restricao: DC para documentos emitidos ate 2017-06-30, CM para consulta de mesa,
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Tipo de documento suscetivel de apresentacao ao cliente para conferencia de mercadorias 

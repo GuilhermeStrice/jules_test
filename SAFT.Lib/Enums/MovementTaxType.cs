@@ -10,7 +10,7 @@
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// SAFT Portugal Movement Tax Type

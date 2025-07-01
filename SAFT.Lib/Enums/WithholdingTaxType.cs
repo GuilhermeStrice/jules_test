@@ -18,7 +18,7 @@ Restricao: IRS para Imposto Sobre o Rendimento das Pessoas Singulares, IRC para 
 
 using System.Xml.Serialization;
 
-namespace SAFT.Lib.Enums
+namespace SAFT.Lib
 {
     /// <summary>
     /// Codigo do tipo de imposto retido

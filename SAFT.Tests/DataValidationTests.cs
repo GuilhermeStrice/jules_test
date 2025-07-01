@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using SAFT.Lib;
-using SAFT.Lib.Enums;
 
 namespace SAFT.Tests
 {
