@@ -19,44 +19,6 @@ namespace SAFT.Lib.Validation
     {
 
 
-        /// <summary>
-        /// Evaluates an XSD 1.1 assertion expression.
-        /// </summary>
-        /// <param name="assertionTest">The assertion test expression.</param>
-        /// <param name="contextNode">The XML node context for evaluation.</param>
-        /// <returns>Assertion evaluation result.</returns>
-
-        /// <summary>
-        /// Parses and evaluates an XSD 1.1 assertion expression.
-        /// </summary>
-        /// <param name="expression">The assertion expression to evaluate.</param>
-        /// <param name="contextNode">The XML node context.</param>
-        /// <returns>True if the assertion passes, false otherwise.</returns>
-
-        /// <summary>
-        /// Evaluates if-then-else expressions in XSD 1.1 assertions.
-        /// </summary>
-        /// <param name="expression">The if expression to evaluate.</param>
-        /// <param name="contextNode">The XML node context.</param>
-        /// <returns>True if the condition is met, false otherwise.</returns>
-
-        /// <summary>
-        /// Evaluates boolean expressions in XSD 1.1 assertions.
-        /// </summary>
-        /// <param name="expression">The boolean expression to evaluate.</param>
-        /// <param name="contextNode">The XML node context.</param>
-        /// <returns>True if the expression evaluates to true, false otherwise.</returns>
-
-        /// <summary>
-        /// Evaluates XPath-like expressions in the context of an XML node.
-        /// </summary>
-        /// <param name="expression">The XPath expression to evaluate.</param>
-        /// <param name="contextNode">The XML node context.</param>
-        /// <returns>The value of the expression or empty string if not found.</returns>
-
-        /// <summary>
-        /// Represents the result of an assertion evaluation.
-        /// </summary>
 
             /// <summary>
             /// Validates Portuguese tax rules and compliance.

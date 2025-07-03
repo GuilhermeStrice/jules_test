@@ -234,6 +234,9 @@ namespace SAFT.Lib.Validation
             }
         }
 
+        /// <summary>
+        /// Represents the result of an assertion evaluation.
+        /// </summary>
         private class AssertionResult
         {
             public bool IsValid { get; set; }
