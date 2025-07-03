@@ -28,6 +28,11 @@ namespace SAFT.Lib.Validation
                 var nsManager = new XmlNamespaceManager(xmlDoc.NameTable);
                 nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
                 ValidateSelfBillingIndicator(xmlDoc, nsManager, errors);
+
+                // Add remaining core validations from SchemaValidator.cs
+                errors.AddRange(ValidateDateRanges(xmlDoc));
+                errors.AddRange(ValidateInvoiceNumbering(xmlDoc));
+                errors.AddRange(ValidatePaymentTerms(xmlDoc));
             }
             catch (Exception ex)
             {
@@ -142,6 +147,184 @@ namespace SAFT.Lib.Validation
                 }
             }
             return errors;
+        }
+
+        /// <summary>
+        /// Validates SpecialRegimes fields in invoices.
+        /// </summary>
+        internal static void ValidateSpecialRegimesField(XmlDocument xmlDoc, XmlNamespaceManager nsManager, List<string> errors)
+        {
+            var invoices = xmlDoc.SelectNodes("//ns:Invoice", nsManager);
+            if (invoices == null) return;
+
+            foreach (XmlNode invoice in invoices)
+            {
+                var specialRegimes = invoice.SelectSingleNode("ns:SpecialRegimes", nsManager);
+                if (specialRegimes != null)
+                {
+                    var selfBilling = specialRegimes.SelectSingleNode("ns:SelfBillingIndicator", nsManager)?.InnerText;
+                    var cashVAT = specialRegimes.SelectSingleNode("ns:CashVATSchemeIndicator", nsManager)?.InnerText;
+                    var thirdParty = specialRegimes.SelectSingleNode("ns:ThirdPartiesBillingIndicator", nsManager)?.InnerText;
+
+                    if (!string.IsNullOrEmpty(selfBilling) && selfBilling != "0" && selfBilling != "1")
+                        errors.Add($"SpecialRegimes: SelfBillingIndicator must be 0 or 1 if present, got '{selfBilling}'");
+                    if (!string.IsNullOrEmpty(cashVAT) && cashVAT != "0" && cashVAT != "1")
+                        errors.Add($"SpecialRegimes: CashVATSchemeIndicator must be 0 or 1 if present, got '{cashVAT}'");
+                    if (!string.IsNullOrEmpty(thirdParty) && thirdParty != "0" && thirdParty != "1")
+                        errors.Add($"SpecialRegimes: ThirdPartiesBillingIndicator must be 0 or 1 if present, got '{thirdParty}'");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validates SpecialRegimes fields in invoices (wrapper for tests).
+        /// </summary>
+        internal static List<string> ValidateSpecialRegimesField(XmlDocument xmlDoc)
+        {
+            var errors = new List<string>();
+            var nsManager = new XmlNamespaceManager(xmlDoc.NameTable);
+            nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
+            ValidateSpecialRegimesField(xmlDoc, nsManager, errors);
+            return errors;
+        }
+
+        /// <summary>
+        /// Validates Portuguese tax rules and compliance.
+        /// </summary>
+        internal static List<string> ValidatePortugueseTaxRules(XmlDocument xmlDoc)
+        {
+            var errors = new List<string>();
+            var nsManager = new XmlNamespaceManager(xmlDoc.NameTable);
+            nsManager.AddNamespace("ns", "urn:OECD:StandardAuditFile-Tax:PT_1.04_01");
+
+            // Portuguese VAT number validation (9 digits)
+            var taxNumbers = xmlDoc.SelectNodes("//ns:TaxRegistrationNumber", nsManager);
+            foreach (XmlNode taxNumber in taxNumbers)
+            {
+                if (int.TryParse(taxNumber.InnerText, out int number))
+                {
+                    if (number.ToString().Length != 9)
+                    {
+                        errors.Add($"Portuguese VAT number validation error: Tax registration number must be 9 digits, got {number}");
+                    }
+                }
+            }
+
+            // Portuguese tax codes validation
+            var validTaxCodes = new HashSet<string> { "RED", "INT", "NOR", "ISE", "OUT", "NS" };
+            var taxCodes = xmlDoc.SelectNodes("//ns:TaxCode", nsManager);
+            foreach (XmlNode taxCode in taxCodes)
+            {
+                if (!validTaxCodes.Contains(taxCode.InnerText))
+                {
+                    errors.Add($"Portuguese tax code validation error: Invalid tax code '{taxCode.InnerText}'");
+                }
+            }
+
+            // Portuguese currency validation (EUR)
+            var currencyCodes = xmlDoc.SelectNodes("//ns:CurrencyCode", nsManager);
+            foreach (XmlNode currencyCode in currencyCodes)
+            {
+                if (currencyCode.InnerText != "EUR")
+                {
+                    errors.Add($"Portuguese currency validation error: Currency must be EUR, got {currencyCode.InnerText}");
+                }
+            }
+
+            // Tax exemption validation
+            var lines = xmlDoc.SelectNodes("//ns:Line", nsManager);
+            foreach (XmlNode line in lines)
+            {
+                var tax = line.SelectSingleNode(".//ns:Tax", nsManager);
+                if (tax != null)
+                {
+                    var taxPercentage = tax.SelectSingleNode(".//ns:TaxPercentage", nsManager);
+                    var exemptionReason = line.SelectSingleNode(".//ns:TaxExemptionReason", nsManager);
+                    var exemptionCode = line.SelectSingleNode(".//ns:TaxExemptionCode", nsManager);
+
+                    if (taxPercentage != null && decimal.TryParse(taxPercentage.InnerText, out decimal percentage))
+                    {
+                        if (percentage == 0 && (exemptionReason == null || exemptionCode == null))
+                        {
+                            errors.Add($"Tax exemption validation error: 0% tax requires exemption reason and code");
+                        }
+                    }
+                }
+            }
+
+            return errors;
+        }
+
+        /// <summary>
+        /// Validates SelfBillingIndicator rules for both master data and document level.
+        /// </summary>
+        internal static void ValidateSelfBillingIndicator(XmlDocument xmlDoc, XmlNamespaceManager nsManager, List<string> errors)
+        {
+            try
+            {
+                // 1. Build lookup for customers/suppliers with SelfBillingIndicator=1
+                var customerSelfBilling = new HashSet<string>();
+                var customers = xmlDoc.SelectNodes("//ns:Customer", nsManager);
+                if (customers != null)
+                {
+                    foreach (XmlNode customer in customers)
+                    {
+                        var id = customer.SelectSingleNode("ns:CustomerID", nsManager)?.InnerText;
+                        var indicator = customer.SelectSingleNode("ns:SelfBillingIndicator", nsManager)?.InnerText;
+                        if (id != null && indicator == "1")
+                            customerSelfBilling.Add(id);
+                    }
+                }
+                var supplierSelfBilling = new HashSet<string>();
+                var suppliers = xmlDoc.SelectNodes("//ns:Supplier", nsManager);
+                if (suppliers != null)
+                {
+                    foreach (XmlNode supplier in suppliers)
+                    {
+                        var id = supplier.SelectSingleNode("ns:SupplierID", nsManager)?.InnerText;
+                        var indicator = supplier.SelectSingleNode("ns:SelfBillingIndicator", nsManager)?.InnerText;
+                        if (id != null && indicator == "1")
+                            supplierSelfBilling.Add(id);
+                    }
+                }
+
+                // 2. Validate invoices
+                var invoices = xmlDoc.SelectNodes("//ns:Invoice", nsManager);
+                if (invoices != null)
+                {
+                    foreach (XmlNode invoice in invoices)
+                    {
+                        var customerId = invoice.SelectSingleNode("ns:CustomerID", nsManager)?.InnerText;
+                        var specialRegimes = invoice.SelectSingleNode("ns:SpecialRegimes", nsManager);
+                        var selfBilling = specialRegimes?.SelectSingleNode("ns:SelfBillingIndicator", nsManager)?.InnerText;
+                        var invoiceType = invoice.SelectSingleNode("ns:InvoiceType", nsManager)?.InnerText;
+                        var sourceBilling = invoice.SelectSingleNode("ns:DocumentStatus/ns:SourceBilling", nsManager)?.InnerText;
+
+                        // If invoice is self-billed
+                        if (selfBilling == "1")
+                        {
+                            // Customer must have SelfBillingIndicator=1
+                            if (customerId != null && !customerSelfBilling.Contains(customerId))
+                                errors.Add($"Invoice {GetDocumentIdentifier(invoice, nsManager)} is marked as self-billed, but customer {customerId} is not marked as self-billing in master data");
+                            // InvoiceType must not be FS (simplified invoice)
+                            if (invoiceType == "FS")
+                                errors.Add($"Invoice {GetDocumentIdentifier(invoice, nsManager)} is self-billed but has InvoiceType 'FS' (simplified invoice), which is not allowed");
+                            // SourceBilling should not be 'P' (unless justified)
+                            if (sourceBilling == "P")
+                                errors.Add($"Invoice {GetDocumentIdentifier(invoice, nsManager)} is self-billed but has SourceBilling 'P' (produced in application); should be 'I' or 'M' for self-billing");
+                        }
+                        // If customer is self-billing, all invoices must be self-billed
+                        if (customerId != null && customerSelfBilling.Contains(customerId) && selfBilling != "1")
+                            errors.Add($"Invoice {GetDocumentIdentifier(invoice, nsManager)} is for a self-billing customer {customerId} but is not marked as self-billed");
+                    }
+                }
+                // 3. Validate supplier invoices (if applicable, e.g., for purchase invoices)
+                // (Add similar logic for supplier if your system supports supplier-side documents)
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Self-billing indicator validation error: {ex.Message}");
+            }
         }
     }
 }
