@@ -59,47 +59,6 @@ namespace SAFT.Lib.Validation
         /// </summary>
 
         /// <summary>
-        /// Represents a collection of identity constraints.
-        /// </summary>
-        private class IdentityConstraints
-        {
-            public List<UniqueConstraint> Uniques { get; set; } = new List<UniqueConstraint>();
-            public List<KeyConstraint> Keys { get; set; } = new List<KeyConstraint>();
-            public List<KeyRefConstraint> KeyRefs { get; set; } = new List<KeyRefConstraint>();
-        }
-
-        /// <summary>
-        /// Represents a unique constraint.
-        /// </summary>
-        private class UniqueConstraint
-        {
-            public string Name { get; set; } = "";
-            public string Selector { get; set; } = "";
-            public string Field { get; set; } = "";
-        }
-
-        /// <summary>
-        /// Represents a key constraint.
-        /// </summary>
-        private class KeyConstraint
-        {
-            public string Name { get; set; } = "";
-            public string Selector { get; set; } = "";
-            public string Field { get; set; } = "";
-        }
-
-        /// <summary>
-        /// Represents a keyref constraint.
-        /// </summary>
-        private class KeyRefConstraint
-        {
-            public string Name { get; set; } = "";
-            public string Refer { get; set; } = "";
-            public string Selector { get; set; } = "";
-            public string Field { get; set; } = "";
-        }
-
-        /// <summary>
         /// Validates VAT calculations in invoice lines and totals.
         /// </summary>
         internal static List<string> ValidateVATCalculations(XmlDocument xmlDoc)
