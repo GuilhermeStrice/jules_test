@@ -23,9 +23,9 @@ namespace SAFT.Tests
         {
             var outputDir = Directory.GetCurrentDirectory();
             var outputSchemaPath = Path.Combine(outputDir, "schema1_04_fixed.xsd");
-            if (!File.Exists(outputSchemaPath) && File.Exists(schemaPath))
+            if (File.Exists(schemaPath))
             {
-                File.Copy(schemaPath, outputSchemaPath);
+                File.Copy(schemaPath, outputSchemaPath, overwrite: true);
             }
         }
 
@@ -41,4 +41,4 @@ namespace SAFT.Tests
             return Path.Combine(solutionDir, "valid_saft.xml");
         }
     }
-} 
+}
